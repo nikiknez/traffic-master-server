@@ -81,7 +81,7 @@ function CamConfig(cam, street) {
         };
         if (cam.getVideoTime) {
             data.videoFileName = cam.file;
-            data.videoTime = cam.getVideoTime();
+            data.videoTime = cam.getVideoTime() * 1000;
         }
         console.log(data);
         return $.param(data);

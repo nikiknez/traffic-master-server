@@ -21,6 +21,7 @@ import rs.etf.kn.master.model.CamStreetConfig;
 import rs.etf.kn.master.model.Camera;
 import rs.etf.kn.master.model.Configuration;
 import rs.etf.kn.master.model.Street;
+import rs.etf.kn.master.opencv.OpenCV;
 
 /**
  *
@@ -48,22 +49,33 @@ public class SaveCameraConfigServlet extends HttpServlet {
 
         try {
             Point2D.Float[] linePoints = new Gson().fromJson(line, Point2D.Float[].class);
+            BufferedImage transformedImg = (BufferedImage) request.getSession().getAttribute("transformedImage");
+            OpenCV.scalePoints(linePoints, transformedImg.getWidth(), transformedImg.getHeight());
             float lineLength = Float.parseFloat(lineLengthParam);
-
             float metersPerPixelRatio = calcMetersPerPixelRatio(linePoints, lineLength);
-            Point2D.Float[] polyPoints = (Point2D.Float[]) request.getSession().getAttribute("configCameraPolygon");
 
             BufferedImage reperFrame = (BufferedImage) request.getSession().getAttribute("currentFrame");
             ImageIO.write(reperFrame, "jpg", new File(Configuration.REPERS_DIR + streetId + ".jpg"));
 
+            Point2D.Float[] polyPoints = (Point2D.Float[]) request.getSession().getAttribute("configCameraPolygon");
             CamStreetConfig camStreetConfig = new CamStreetConfig(streetId, polyPoints, metersPerPixelRatio);
 
             LinkedList<Street> newStreets = (LinkedList<Street>) request.getSession().getAttribute("newStreets");
-            for (Street s : newStreets) {
-                if (s.getId().equals(streetId)) {
+            if (newStreets != null) {
+                for (Street s : newStreets) {
+                    if (s.getId().equals(streetId)) {
+                        cam.getStreets().add(camStreetConfig);
+                        newStreets.remove(s);
+                        Configuration.get().addStreet(s);
+                        response.getWriter().write("ok");
+                        return;
+                    }
+                }
+            }
+            for (CamStreetConfig c : cam.getStreets()) {
+                if (c.getStreetId().equals(streetId)) {
+                    cam.getStreets().remove(c);
                     cam.getStreets().add(camStreetConfig);
-                    newStreets.remove(s);
-                    Configuration.get().addStreet(s);
                     response.getWriter().write("ok");
                     return;
                 }

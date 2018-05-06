@@ -10,8 +10,6 @@ import org.opencv.imgproc.Imgproc;
 public class PerspectiveTransformator {
 
     public static BufferedImage fourPointTransform(BufferedImage orig, Point2D.Float[] points) {
-        points = scalePoints(points, orig.getWidth(), orig.getHeight());
-
         Mat src_mat = new Mat(1, 4, CvType.CV_32FC2);
         Mat dst_mat = new Mat(1, 4, CvType.CV_32FC2);
         Dimension outSize = calcSize(points);
@@ -109,14 +107,5 @@ public class PerspectiveTransformator {
             }
         }
         return idx;
-    }
-
-    private static Point2D.Float[] scalePoints(Point2D.Float[] points, float x, float y) {
-        Point2D.Float[] newPoints = points.clone();
-        for (Point2D.Float p : newPoints) {
-            p.x *= x;
-            p.y *= y;
-        }
-        return newPoints;
     }
 }

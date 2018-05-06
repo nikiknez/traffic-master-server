@@ -53,9 +53,9 @@ public class ConfigCameraServlet extends HttpServlet {
                 pausedFrame = OpenCV.readFrame(Configuration.BASE_DIR + videoFileName, videoTimeValue);
                 request.getSession().setAttribute("currentFrame", pausedFrame);
             }
-            
+            OpenCV.scalePoints(polyPoints, pausedFrame.getWidth(), pausedFrame.getHeight());
             BufferedImage outImg = PerspectiveTransformator.fourPointTransform(pausedFrame, polyPoints);
-            
+            request.getSession().setAttribute("transformedImage", outImg);
             ImageIO.write(outImg, "jpg", new File(Configuration.TEMP_DIR + "transformed.jpg"));
             
             response.getWriter().write("ok");

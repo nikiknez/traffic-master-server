@@ -5,6 +5,7 @@
  */
 package rs.etf.kn.master.opencv;
 
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.FileNotFoundException;
@@ -24,7 +25,7 @@ public class OpenCV {
             System.out.println("Trying to load opencv library");
             System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
             System.out.println("loaded opencv library: " + Core.NATIVE_LIBRARY_NAME);
-            
+
             System.loadLibrary("opencv_ffmpeg2413_64");
             return true;
         } catch (Exception | UnsatisfiedLinkError e) {
@@ -78,19 +79,28 @@ public class OpenCV {
                 return BufferedImage.TYPE_4BYTE_ABGR;
         }
     }
-    
+
     public static BufferedImage readFrame(String fileName, double time) throws FileNotFoundException {
         VideoCapture file = new VideoCapture(fileName);
-        if(!file.isOpened()){
+        if (!file.isOpened()) {
             throw new FileNotFoundException("Can't open file " + fileName);
         }
-        
+
         Mat frame = new Mat();
-        
+
         file.set(0, time);
-        
-        file.read(frame);
-        
+
+        boolean r = file.read(frame);
+
+        System.out.println(fileName + " | Read frame at " + time + ": " + r);
+
         return matToBufferedImage(frame);
+    }
+
+    public static void scalePoints(Point2D.Float[] points, float x, float y) {
+        for (Point2D.Float p : points) {
+            p.x *= x;
+            p.y *= y;
+        }
     }
 }
