@@ -6,15 +6,10 @@
 package rs.etf.kn.master.servlets;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.LinkedList;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import rs.etf.kn.master.model.Camera;
-import rs.etf.kn.master.model.Configuration;
-import rs.etf.kn.master.model.Street;
 
 /**
  *
@@ -37,18 +32,6 @@ public class AddStreetToCamServlet extends HttpServlet {
         String streetId = request.getParameter("streetId");
         String camId = request.getParameter("camId");
 
-        Camera cam = Configuration.get().getCamById(camId);
-
-        LinkedList<Street> newStreets = (LinkedList<Street>) request.getSession().getAttribute("newStreets");
-        for (Street s : newStreets) {
-            if (s.getId().equals(streetId)) {
-                cam.getStreets().add(streetId);
-                Configuration.get().addStreet(s);
-                newStreets.remove(s);
-                response.getWriter().write("ok");
-                return;
-            }
-        }
         response.getWriter().write("!");
     }
 

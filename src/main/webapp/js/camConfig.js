@@ -121,7 +121,8 @@ function CamConfig(cam, street) {
         var data = {
             line: JSON.stringify(l),
             lineLength: lineLength,
-            streetId: street.id
+            streetId: street.id,
+            cameraId: cam.id
         };
         $.post("SaveCameraConfigServlet", $.param(data), function (responseText) {
             console.log(responseText);

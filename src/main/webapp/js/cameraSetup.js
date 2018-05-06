@@ -90,18 +90,18 @@ function initCameraSetup() {
             console.log(response);
         });
     });
-    
-    for(var i in config.cameras){
+
+    for (var i in config.cameras) {
         var c = config.cameras[i];
-        
+
         var cam;
-        if(c.type === "ip"){
+        if (c.type === "ip") {
             cam = new IpCamera(c.name, c.location, c.ipAddress);
-        }else{
+        } else {
             cam = new FileCamera(c.name, c.location, c.videoFileName);
         }
         cam.id = c.id;
-        cam.myStreets = c.streets;
+        cam.myStreets = extractStreetIds(c.streets);
         assignCamIdToStreets(cam.id, cam.myStreets);
         cameras.push(cam);
     }
@@ -117,12 +117,20 @@ function initCameraSetup() {
         file = null;
     });
 }
-function assignCamIdToStreets(camId, streetIds){
-    for(var s in streets){
-        for(var si in streetIds){
-            if(streets[s].id === streetIds[si]){
+function assignCamIdToStreets(camId, streetIds) {
+    for (var s in streets) {
+        for (var si in streetIds) {
+            if (streets[s].id === streetIds[si]) {
                 streets[s].camId = camId;
             }
         }
     }
+}
+
+function extractStreetIds(streets) {
+    var r = [];
+    for (var s in streets) {
+        r.push(streets[s].streetId);
+    }
+    return r;
 }

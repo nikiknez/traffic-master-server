@@ -9,7 +9,7 @@ public class Camera {
     private String ipAddress;
     private String videoFileName;
     private String id;
-    private List<String> streets;
+    private List<CamStreetConfig> streets;
     private Location location;
 
     public Camera(String id, String name, String type, String ipAddress, String videoFileName, Location location) {
@@ -70,11 +70,11 @@ public class Camera {
         this.id = id;
     }
 
-    public List<String> getStreets() {
+    public List<CamStreetConfig> getStreets() {
         return streets;
     }
 
-    public void setStreets(List<String> streets) {
+    public void setStreets(List<CamStreetConfig> streets) {
         this.streets = streets;
     }
     
