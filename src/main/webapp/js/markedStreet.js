@@ -130,17 +130,12 @@ function enterCamSelectMode() {
 }
 function exitCamSelectMode(cam) {
     camSelectMode = false;
+    selectedStreet.camId = cam.id;
+    selectedStreet = null;
     map.setOptions({disableDefaultUI: false});
+    
     $("#centerControlDiv").show();
     $("#userControlDiv").show();
     $("#camSelectDiv").addClass("hidden");
     $("#info4").addClass("hidden");
-    
-    var p = {streetId: selectedStreet.id, camId: cam.id};
-    $.post("AddStreetToCamServlet", $.param(p), function (responseText) {
-       console.log(responseText); 
-    });
-
-    selectedStreet.camId = cam.id;
-    selectedStreet = null;
 }

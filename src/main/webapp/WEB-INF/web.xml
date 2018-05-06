@@ -25,10 +25,6 @@
         <servlet-class>rs.etf.kn.master.servlets.AddStreetServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>AddStreetToCamServlet</servlet-name>
-        <servlet-class>rs.etf.kn.master.servlets.AddStreetToCamServlet</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>AddViewServlet</servlet-name>
         <servlet-class>rs.etf.kn.master.servlets.AddViewServlet</servlet-class>
     </servlet>
@@ -75,10 +71,6 @@
     <servlet-mapping>
         <servlet-name>AddStreetServlet</servlet-name>
         <url-pattern>/AddStreetServlet</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>AddStreetToCamServlet</servlet-name>
-        <url-pattern>/AddStreetToCamServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>AddViewServlet</servlet-name>
