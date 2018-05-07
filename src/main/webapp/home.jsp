@@ -7,8 +7,8 @@
         <link rel="stylesheet" href="css/styles.css"/>
         <link rel="stylesheet" href="css/bootstrap.min.css">
         <link rel="stylesheet" href="css/bootstrap-datetimepicker.min.css">
-        <script src="js/jquery.min.js"></script>
-        <script src="js/jquery.form.min.js"></script>
+        <script src="js/jq/jquery.min.js"></script>
+        <script src="js/jq/jquery.form.min.js"></script>
         <script src="js/bs/bootstrap.min.js"></script>
         <script src="js/bs/moment.js"></script>
         <script src="js/bs/sr.js"></script>
@@ -297,7 +297,6 @@
         
         <script>
             var config = ${config};
-            //var config = {"cameras":[{"name":"Autokomanda","type":"ip","ipAddress":"http://109.206.96.249:8080/cam_3.jpg","videoFileName":"","id":"16","streets":["30"],"location":{"lat":44.826504121639935,"lng":20.40734052658081}},{"name":"Autoput","type":"file","ipAddress":"","videoFileName":"/videos/1500422132232.mp4","id":"31","streets":["32"],"location":{"lat":44.82029454113637,"lng":20.40139675140381}},{"name":"Brankov Most","type":"file","ipAddress":"","videoFileName":"/videos/162.mp4","id":"163","streets":["161"],"location":{"lat":44.815423813907536,"lng":20.45328140258789}}],"streets":[{"path":[{"lat":44.826443246646235,"lng":20.407791137695312},{"lat":44.82248623415785,"lng":20.41686773300171}],"owner":"bosko","id":"17","infoText":"Radovi na putu","validFrom":"16.07.2017 23:32","validTo":"23.07.2017 23:32"},{"path":[{"lat":44.82632149646591,"lng":20.408756732940674},{"lat":44.83005758798857,"lng":20.408005714416504}],"owner":"admin","id":"30"},{"path":[{"lat":44.823163511330065,"lng":20.396944284439087},{"lat":44.82221988702274,"lng":20.399036407470703},{"lat":44.8210859954495,"lng":20.401536226272583},{"lat":44.82096803900523,"lng":20.401766896247864},{"lat":44.82025268507694,"lng":20.40335476398468},{"lat":44.819221494381075,"lng":20.40561854839325},{"lat":44.81826258463947,"lng":20.407678484916687}],"owner":"admin","id":"32"},{"path":[{"lat":44.814388731366726,"lng":20.43933391571045},{"lat":44.81499760569959,"lng":20.45083522796631},{"lat":44.8150584927793,"lng":20.453453063964844},{"lat":44.81451050674758,"lng":20.45632839202881},{"lat":44.814236511779,"lng":20.457916259765625}],"owner":"admin","id":"161"}],"mapViews":[{"lat":44.809375818705114,"lng":20.455696287155206,"zoom":13.0,"name":"Beograd"},{"lat":44.82500038010395,"lng":20.411214532852227,"zoom":16.0,"name":"Fontana"}],"users":[{"name":"Administrator","username":"admin","password":"sifra123"},{"name":"Odrzavanje puteva","username":"bosko","password":"sifra123"}],"nextId":165};
         </script>
 
         <script src="js/util.js"></script>

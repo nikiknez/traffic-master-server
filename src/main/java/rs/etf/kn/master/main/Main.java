@@ -10,13 +10,14 @@ public class Main implements ServletContextListener {
 
     public Main() {
         System.out.println("Constructor of Main");
-        initializeBackend();
     }
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         System.out.println("ServletContextListener started");
         Configuration.load();
+        
+        initializeBackend();
     }
 
     @Override
