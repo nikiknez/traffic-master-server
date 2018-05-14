@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import org.opencv.core.Mat;
 import org.opencv.highgui.VideoCapture;
+import rs.etf.kn.master.opencv.OpenCV;
 
 public class FileCamImageFetcher extends CamImageFetcher {
 
@@ -25,7 +26,9 @@ public class FileCamImageFetcher extends CamImageFetcher {
             throw new IOException("End of video file");
         }
         long ts = (long) fileSource.get(0);
-        return new CamImage(currentFrame, ts);
+        
+        Mat matImgGray = OpenCV.createGray(currentFrame);
+        return new CamImage(currentFrame, matImgGray, ts);
     }
 
 }

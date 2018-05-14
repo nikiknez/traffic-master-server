@@ -23,8 +23,8 @@ public class IpCamImageFetcher extends CamImageFetcher {
         long ts = System.currentTimeMillis();
 
         Mat matImg = OpenCV.bufferedImgToMat(img);
-
-        return new CamImage(matImg, ts);
+        Mat matImgGray = OpenCV.createGray(matImg);
+        return new CamImage(matImg, matImgGray, ts);
     }
 
 }

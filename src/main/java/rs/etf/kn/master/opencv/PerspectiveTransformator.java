@@ -10,6 +10,12 @@ import org.opencv.imgproc.Imgproc;
 public class PerspectiveTransformator {
 
     public static BufferedImage fourPointTransform(BufferedImage orig, Point2D.Float[] points) {
+        Mat in = OpenCV.bufferedImgToMat(orig);
+        Mat out = fourPointTransform(in, points);
+        return OpenCV.matToBufferedImage(out);
+    }
+    
+    public static Mat fourPointTransform(Mat orig, Point2D.Float[] points) {
         Mat src_mat = new Mat(1, 4, CvType.CV_32FC2);
         Mat dst_mat = new Mat(1, 4, CvType.CV_32FC2);
         Dimension outSize = calcSize(points);
@@ -19,14 +25,11 @@ public class PerspectiveTransformator {
         src_mat.put(0, 0, toFloatArray(points));
         Mat M = Imgproc.getPerspectiveTransform(src_mat, dst_mat);
 
-        Mat in = OpenCV.bufferedImgToMat(orig);
-        Mat out = new Mat(outSize.height, outSize.width, in.type());
+        Mat out = new Mat(outSize.height, outSize.width, orig.type());
 
-        Imgproc.warpPerspective(in, out, M, out.size());
+        Imgproc.warpPerspective(orig, out, M, out.size());
 
-        BufferedImage img = OpenCV.matToBufferedImage(out);
-
-        return img;
+        return out;
     }
 
     private static float[] toFloatArray(Point2D.Float[] points) {

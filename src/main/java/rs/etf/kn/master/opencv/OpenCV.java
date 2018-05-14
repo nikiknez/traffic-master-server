@@ -13,6 +13,7 @@ import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.highgui.VideoCapture;
+import org.opencv.imgproc.Imgproc;
 
 /**
  *
@@ -95,6 +96,17 @@ public class OpenCV {
         System.out.println(fileName + " | Read frame at " + time + ": " + r);
 
         return matToBufferedImage(frame);
+    }
+    
+    
+    public static void toGray(Mat colored){
+        Imgproc.cvtColor(colored, colored, Imgproc.COLOR_RGB2GRAY);
+    }
+    
+    public static Mat createGray(Mat colored){
+        Mat m = new Mat();
+        Imgproc.cvtColor(colored, m, Imgproc.COLOR_RGB2GRAY);
+        return m;
     }
 
     public static void scalePoints(Point2D.Float[] points, float x, float y) {

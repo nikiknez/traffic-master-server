@@ -4,11 +4,13 @@ import org.opencv.core.Mat;
 
 public class CamImage {
 
-    public CamImage(Mat matImg, long timeStamp) {
+    public CamImage(Mat matImg, Mat matImgGray, long timeStamp) {
         this.matImg = matImg;
+        this.matImgGray = matImgGray;
         this.timeStamp = timeStamp;
     }
 
     Mat matImg;
+    Mat matImgGray;
     long timeStamp;
 }
