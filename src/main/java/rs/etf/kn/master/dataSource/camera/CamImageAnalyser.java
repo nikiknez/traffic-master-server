@@ -20,7 +20,7 @@ import rs.etf.kn.master.model.CamStreetConfig;
 import rs.etf.kn.master.opencv.OpenCV;
 import rs.etf.kn.master.opencv.PerspectiveTransformator;
 
-public class CamImageAnalyser implements Runnable, CamImageFetcher.CamImageListener {
+public class CamImageAnalyser extends Thread implements CamImageFetcher.CamImageListener {
 
     private boolean run = true;
     private CamStreetConfig camStreetConfig;
@@ -39,7 +39,8 @@ public class CamImageAnalyser implements Runnable, CamImageFetcher.CamImageListe
         matReperImage = img;
         reperImageFeaturePoints = new MatOfPoint2f();
         MatOfPoint corners = new MatOfPoint();
-        Imgproc.goodFeaturesToTrack(matReperImage, corners, 2000, 0.01, 10);
+        double minDistance = Math.sqrt(img.width() * img.height() / 2000);
+        Imgproc.goodFeaturesToTrack(img, corners, 1000, 0.01, minDistance);
         corners.convertTo(reperImageFeaturePoints, CvType.CV_32F);
     }
 
@@ -57,27 +58,27 @@ public class CamImageAnalyser implements Runnable, CamImageFetcher.CamImageListe
     public void run() {
         try {
             CamImage lastFrame = getNextValidImage();
-            CamImage nextFrame = getNextValidImage();
-            if (nextFrame.timeStamp - lastFrame.timeStamp > 1000) {
-                return;
-            }
-            Mat lastFrameROI = PerspectiveTransformator.fourPointTransform(lastFrame.matImgGray, camStreetConfig.getPolyPoints());
-            Mat nextFrameROI = PerspectiveTransformator.fourPointTransform(nextFrame.matImgGray, camStreetConfig.getPolyPoints());
-            
-            MatOfPoint2f matLastPoints = goodFeaturesToTrack(lastFrameROI);
-            MatOfPoint2f matNextPoints = new MatOfPoint2f();
-            
-            
-            
+            while (run) {
 
+                CamImage nextFrame = getNextValidImage();
+                if (nextFrame.timeStamp - lastFrame.timeStamp > 1000) {
+                    return;
+                }
+                Mat lastFrameROI = PerspectiveTransformator.fourPointTransform(lastFrame.matImgGray, camStreetConfig.getPolyPoints());
+                Mat nextFrameROI = PerspectiveTransformator.fourPointTransform(nextFrame.matImgGray, camStreetConfig.getPolyPoints());
+
+                MatOfPoint2f matLastPoints = goodFeaturesToTrack(lastFrameROI);
+                MatOfPoint2f matNextPoints = new MatOfPoint2f();
+
+            }
         } catch (InterruptedException ex) {
             Logger.getLogger(CamImageAnalyser.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public synchronized void stop() {
+    public synchronized void stopProcessing() {
         run = false;
-        notify();
+        interrupt();
     }
 
     @Override
@@ -103,8 +104,8 @@ public class CamImageAnalyser implements Runnable, CamImageFetcher.CamImageListe
 
     private double reperImageSimilarity(Mat img) {
         MatOfPoint2f nextPts = new MatOfPoint2f();
-        MatOfByte matStatus  = new MatOfByte();
-        MatOfFloat matError  = new MatOfFloat();
+        MatOfByte matStatus = new MatOfByte();
+        MatOfFloat matError = new MatOfFloat();
 
         Video.calcOpticalFlowPyrLK(matReperImage, img, reperImageFeaturePoints, nextPts, matStatus, matError);
 
