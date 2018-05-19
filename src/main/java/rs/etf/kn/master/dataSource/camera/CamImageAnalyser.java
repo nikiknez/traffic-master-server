@@ -58,17 +58,25 @@ public class CamImageAnalyser extends Thread implements CamImageFetcher.CamImage
     public void run() {
         try {
             CamImage lastFrame = getNextValidImage();
+            CamImage nextFrame;
+            Mat lastFrameROI = PerspectiveTransformator.fourPointTransform(lastFrame.matImgGray, camStreetConfig.getPolyPoints());
+            Mat nextFrameROI;
             while (run) {
-
-                CamImage nextFrame = getNextValidImage();
-                if (nextFrame.timeStamp - lastFrame.timeStamp > 1000) {
-                    return;
+                nextFrame = getNextValidImage();
+                nextFrameROI = PerspectiveTransformator.fourPointTransform(nextFrame.matImgGray, camStreetConfig.getPolyPoints());
+                long timeDiff = nextFrame.timeStamp - lastFrame.timeStamp;
+                if (timeDiff > 1000) {
+                    lastFrame = nextFrame;
+                    lastFrameROI = nextFrameROI;
+                    continue;
                 }
-                Mat lastFrameROI = PerspectiveTransformator.fourPointTransform(lastFrame.matImgGray, camStreetConfig.getPolyPoints());
-                Mat nextFrameROI = PerspectiveTransformator.fourPointTransform(nextFrame.matImgGray, camStreetConfig.getPolyPoints());
-
                 MatOfPoint2f matLastPoints = goodFeaturesToTrack(lastFrameROI);
-                MatOfPoint2f matNextPoints = new MatOfPoint2f();
+
+                List<MotionVector> motionVectors = calcOpticalFlow(lastFrameROI, nextFrameROI, matLastPoints);
+
+                for (MotionVector motion : motionVectors) {
+
+                }
 
             }
         } catch (InterruptedException ex) {
@@ -129,8 +137,51 @@ public class CamImageAnalyser extends Thread implements CamImageFetcher.CamImage
                 }
             }
         }
+        if (valid == 0) {
+            return 0;
+        }
         double sim = valid / total > 0.3 ? fix / valid : 0;
         System.out.println("total = " + total + "   valid = " + valid + "   fix = " + fix + "   similarity = " + sim);
         return sim;
+    }
+
+    private List<MotionVector> calcOpticalFlow(Mat prevImg, Mat nextImg, MatOfPoint2f prevPts) {
+        MatOfPoint2f nextPts = new MatOfPoint2f();
+        MatOfByte matStatus = new MatOfByte();
+        MatOfFloat matError = new MatOfFloat();
+
+        Video.calcOpticalFlowPyrLK(prevImg, nextImg, prevPts, nextPts, matStatus, matError);
+
+        Point[] prevp = prevPts.toArray();
+        Point[] nextp = nextPts.toArray();
+        byte[] status = matStatus.toArray();
+        float[] error = matError.toArray();
+
+        List<MotionVector> motionVectors = new LinkedList<>();
+
+        for (int i = 0; i < prevp.length; i++) {
+            if (status[i] != 0 && error[i] < 10) {
+                motionVectors.add(new MotionVector(prevp[i], nextp[i]));
+            }
+        }
+
+        return motionVectors;
+    }
+
+    private class MotionVector {
+
+        Point a, b;
+        double length;
+
+        public MotionVector(Point a, Point b) {
+            this.a = a;
+            this.b = b;
+            length = Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
+        }
+
+        // in meters
+        public double distance(double metersPerPixelRatio) {
+            return length * metersPerPixelRatio;
+        }
     }
 }
