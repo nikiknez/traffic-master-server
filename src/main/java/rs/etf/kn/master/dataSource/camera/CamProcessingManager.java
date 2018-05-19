@@ -3,8 +3,7 @@ package rs.etf.kn.master.dataSource.camera;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -13,14 +12,15 @@ import rs.etf.kn.master.model.Camera;
 import rs.etf.kn.master.model.Configuration;
 
 public class CamProcessingManager {
+
     private static final Logger LOG = Logger.getLogger(CamProcessingManager.class.getName());
 
-    private static List<CamImageFetcher> fetchers;
-    private static List<CamImageAnalyser> analysers;
+    private static ConcurrentHashMap<Camera, CamImageFetcher> fetchers;
+    private static ConcurrentHashMap<String, CamImageAnalyser> analysers;
 
     public static void initialize() {
-        fetchers = new LinkedList<>();
-        analysers = new LinkedList<>();
+        fetchers = new ConcurrentHashMap<>();
+        analysers = new ConcurrentHashMap<>();
         for (Camera c : Configuration.get().getCameras()) {
             try {
                 CamImageFetcher fetcher = CamImageFetcher.create(c);
@@ -28,10 +28,11 @@ public class CamProcessingManager {
                     BufferedImage reperImage = readReperImage(config.getStreetId());
                     CamImageAnalyser analyser = new CamImageAnalyser(config, reperImage);
                     analyser.start();
-                    analysers.add(analyser);
+                    analysers.put(config.getStreetId(), analyser);
+                    fetcher.addListener(analyser);
                 }
                 fetcher.start();
-                fetchers.add(fetcher);
+                fetchers.put(c, fetcher);
             } catch (IOException ex) {
                 LOG.log(Level.SEVERE, null, ex);
             }
@@ -39,22 +40,22 @@ public class CamProcessingManager {
     }
 
     public static void deinitialize() {
-        for (CamImageAnalyser a : analysers) {
-            a.stopProcessing();
+        for (CamImageFetcher f : fetchers.values()) {
+            f.stopFetching();
         }
-        for (CamImageAnalyser a : analysers) {
+        for (CamImageFetcher f : fetchers.values()) {
             try {
-                a.join();
+                f.join();
             } catch (InterruptedException ex) {
                 LOG.log(Level.SEVERE, null, ex);
             }
         }
-        for (CamImageFetcher f : fetchers) {
-            f.stopFetching();
+        for (CamImageAnalyser a : analysers.values()) {
+            a.stopProcessing();
         }
-        for (CamImageFetcher f : fetchers) {
+        for (CamImageAnalyser a : analysers.values()) {
             try {
-                f.join();
+                a.join();
             } catch (InterruptedException ex) {
                 LOG.log(Level.SEVERE, null, ex);
             }
@@ -65,10 +66,24 @@ public class CamProcessingManager {
         try {
             CamImageFetcher fetcher = CamImageFetcher.create(c);
             fetcher.start();
-            fetchers.add(fetcher);
+            fetchers.put(c, fetcher);
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, null, ex);
         }
+    }
+
+    public void addCameraConfig(Camera c, CamStreetConfig config, BufferedImage reperImage) throws InterruptedException {
+        CamImageFetcher fetcher = fetchers.get(c);
+        CamImageAnalyser analyser = analysers.get(config.getStreetId());
+        if (analyser != null) {
+            fetcher.removeListener(analyser);
+            analyser.stopProcessing();
+            analyser.join();
+        }
+        analyser = new CamImageAnalyser(config, reperImage);
+        analyser.start();
+        analysers.put(config.getStreetId(), analyser);
+        fetcher.addListener(analyser);
     }
 
     private static BufferedImage readReperImage(String imgId) throws IOException {

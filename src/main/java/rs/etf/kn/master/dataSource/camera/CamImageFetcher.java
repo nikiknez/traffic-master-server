@@ -49,6 +49,10 @@ public abstract class CamImageFetcher extends Thread {
         listeners.add(l);
         notify();
     }
+    
+    public synchronized void removeListener(CamImageListener l) {
+        listeners.remove(l);
+    }
 
     public static CamImageFetcher create(Camera c) throws FileNotFoundException, MalformedURLException {
         if ("ip".equals(c.getType())) {
