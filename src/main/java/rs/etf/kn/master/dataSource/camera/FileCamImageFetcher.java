@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import org.opencv.core.Mat;
 import org.opencv.highgui.VideoCapture;
+import rs.etf.kn.master.model.Configuration;
 import rs.etf.kn.master.opencv.OpenCV;
 
 public class FileCamImageFetcher extends CamImageFetcher {
@@ -12,6 +13,7 @@ public class FileCamImageFetcher extends CamImageFetcher {
     private Mat currentFrame;
 
     public FileCamImageFetcher(String source) throws FileNotFoundException {
+        source = Configuration.BASE_DIR + source;
         fileSource = new VideoCapture(source);
         if (!fileSource.isOpened()) {
             throw new FileNotFoundException("Can't open file " + source);

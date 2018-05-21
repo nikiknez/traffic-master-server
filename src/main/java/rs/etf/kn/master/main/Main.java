@@ -1,8 +1,8 @@
-
 package rs.etf.kn.master.main;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import rs.etf.kn.master.dataSource.camera.CamProcessingManager;
 import rs.etf.kn.master.model.Configuration;
 import rs.etf.kn.master.opencv.OpenCV;
 
@@ -14,19 +14,26 @@ public class Main implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        System.out.println("ServletContextListener started");
+        System.out.println("contextInitialized begin");
         Configuration.load();
-        
         initializeBackend();
+        System.out.println("contextInitialized end");
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        System.out.println("ServletContextListener destroyed");
+        System.out.println("contextDestroyed begin");
         Configuration.save();
+        deinitializeBackend();
+        System.out.println("contextDestroyed end");
     }
-    
-    private void initializeBackend(){
+
+    private void initializeBackend() {
         OpenCV.loadNativeLibraries();
+        CamProcessingManager.initialize();
+    }
+
+    private void deinitializeBackend() {
+        CamProcessingManager.deinitialize();
     }
 }

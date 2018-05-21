@@ -87,7 +87,7 @@ public class CamProcessingManager {
     }
 
     private static BufferedImage readReperImage(String imgId) throws IOException {
-        String path = Configuration.REPERS_DIR + imgId + "jpg";
+        String path = Configuration.REPERS_DIR + imgId + ".jpg";
         File file = new File(path);
         return ImageIO.read(file);
     }

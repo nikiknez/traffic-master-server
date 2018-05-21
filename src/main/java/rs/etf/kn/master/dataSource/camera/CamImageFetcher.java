@@ -20,12 +20,13 @@ public abstract class CamImageFetcher extends Thread {
         try {
             while (run) {
                 CamImage img = fetchImage();
-
+                System.out.println("Fetched anoter image");
                 for (CamImageListener l : listeners) {
                     l.onImageFetched(img);
                 }
+                Thread.sleep(400); // TODO
             }
-        } catch (IOException ex) {
+        } catch (IOException | InterruptedException ex) {
             Logger.getLogger(CamImageFetcher.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

@@ -36,6 +36,9 @@ public class CamImageAnalyser extends Thread implements CamImageFetcher.CamImage
     }
 
     private synchronized void updateReperImage(Mat img) {
+        if (img.channels() > 1) {
+            OpenCV.toGray(img);
+        }
         matReperImage = img;
         reperImageFeaturePoints = new MatOfPoint2f();
         MatOfPoint corners = new MatOfPoint();
@@ -91,7 +94,11 @@ public class CamImageAnalyser extends Thread implements CamImageFetcher.CamImage
 
     @Override
     public synchronized boolean onImageFetched(CamImage img) {
+        if (camImageQueue.size() > 50) {
+            return false;
+        }
         camImageQueue.add(img);
+        notify();
         return true;
     }
 
@@ -99,6 +106,7 @@ public class CamImageAnalyser extends Thread implements CamImageFetcher.CamImage
         while (camImageQueue.isEmpty()) {
             wait();
         }
+        System.out.println("Analysing new image");
         return camImageQueue.remove(0);
     }
 
