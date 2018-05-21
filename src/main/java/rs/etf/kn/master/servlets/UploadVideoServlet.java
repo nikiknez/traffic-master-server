@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
@@ -36,13 +37,11 @@ public class UploadVideoServlet extends HttpServlet {
         
         InputStream fis = filePart.getInputStream();
         
-        String filePath = Configuration.get().getNextId() + ".mp4";
+        File file = new File(Configuration.TEMP_DIR + "upload.mp4");
         
-        File file = new File(Configuration.VIDEOS_DIR + filePath);
+        Files.copy(fis, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
         
-        Files.copy(fis, file.toPath());
-        
-        response.getWriter().write(filePath);
+        response.getWriter().write("ok");
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

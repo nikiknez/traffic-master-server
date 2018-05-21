@@ -8,7 +8,9 @@ package rs.etf.kn.master.servlets;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -33,24 +35,29 @@ public class AddCameraServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/plain;charset=UTF-8");
+        response.setContentType("application/json");
 
         String name = request.getParameter("name");
         String type = request.getParameter("type");
         String ipAddress = request.getParameter("ipAddress");
-        String file = request.getParameter("file");
         String l = request.getParameter("location");
         try {
             Location location = new Gson().fromJson(l, Location.class);
             String id = Configuration.get().getNextId() + "";
-
-            Camera newCam = new Camera(id, name, type, ipAddress, file, location);
-
-            Configuration.get().addCamera(newCam);
-
-            response.getWriter().write(id);
+            Camera newCam = null;
+            if ("file".equals(type)) {
+                String srcFile = Configuration.TEMP_DIR + "upload.mp4";
+                String dstFile = Configuration.VIDEOS_DIR + id + ".mp4";
+                Files.move(Paths.get(srcFile), Paths.get(dstFile), StandardCopyOption.REPLACE_EXISTING);
+                newCam = new Camera(id, name, type, "", "/videos/" + id + ".mp4", location);
+                Configuration.get().addCamera(newCam);
+            }else if ("ip".equals(type)){
+                newCam = new Camera(id, name, type, ipAddress, "", location);
+                Configuration.get().addCamera(newCam);
+            }
+            response.getWriter().write(new Gson().toJson(newCam));
         } catch (JsonSyntaxException e) {
-            response.getWriter().write(e.getMessage());
+            response.getWriter().write("{error: \"" + e.getMessage() + "\" }");
         }
     }
 

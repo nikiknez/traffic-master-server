@@ -72,22 +72,19 @@ function initCameraSetup() {
             return false;
         }
 
-        var cam;
-        if (tip === "ip") {
-            cam = new IpCamera(name, lastClickLocation, ipAddress);
-            file = "";
-        } else {
-            cam = new FileCamera(name, lastClickLocation, file);
-            ipAddress = "";
-        }
-        cameras.push(cam);
-
-        var p = {name: name, type: tip, ipAddress: ipAddress, file: file};
+        var p = {name: name, type: tip};
         p.location = JSON.stringify(lastClickLocation);
+        if (tip === "ip") {
+            p.ipAddress = ipAddress;
+        }
         console.log(p);
-        $.post("AddCameraServlet", $.param(p), function (response) {
-            cam.id = response;
-            console.log(response);
+        $.post("AddCameraServlet", $.param(p), function (c) {
+            console.log(c);
+            if (c.type === "ip") {
+                cameras.push(new IpCamera(c.name, c.location, c.ipAddress));
+            } else if(c.type === "file"){
+                cameras.push(new FileCamera(c.name, c.location, c.videoFileName));
+            }
         });
     });
 
