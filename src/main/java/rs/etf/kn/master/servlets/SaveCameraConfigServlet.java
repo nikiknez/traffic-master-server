@@ -12,11 +12,14 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import rs.etf.kn.master.dataSource.camera.CamProcessingManager;
 import rs.etf.kn.master.model.CamStreetConfig;
 import rs.etf.kn.master.model.Camera;
 import rs.etf.kn.master.model.Configuration;
@@ -60,6 +63,8 @@ public class SaveCameraConfigServlet extends HttpServlet {
             Point2D.Float[] polyPoints = (Point2D.Float[]) request.getSession().getAttribute("configCameraPolygon");
             CamStreetConfig camStreetConfig = new CamStreetConfig(streetId, polyPoints, metersPerPixelRatio);
 
+            CamProcessingManager.addCameraConfig(cam, camStreetConfig, reperFrame);
+            
             LinkedList<Street> newStreets = (LinkedList<Street>) request.getSession().getAttribute("newStreets");
             if (newStreets != null) {
                 for (Street s : newStreets) {
@@ -83,6 +88,8 @@ public class SaveCameraConfigServlet extends HttpServlet {
             response.getWriter().write("!");
         } catch (JsonSyntaxException | NumberFormatException e) {
             response.getWriter().write(e.getMessage());
+        } catch (InterruptedException ex) {
+            Logger.getLogger(SaveCameraConfigServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

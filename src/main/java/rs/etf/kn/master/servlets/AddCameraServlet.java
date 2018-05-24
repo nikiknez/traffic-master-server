@@ -15,6 +15,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import rs.etf.kn.master.dataSource.camera.CamProcessingManager;
 import rs.etf.kn.master.model.Camera;
 import rs.etf.kn.master.model.Configuration;
 import rs.etf.kn.master.model.Location;
@@ -54,6 +55,9 @@ public class AddCameraServlet extends HttpServlet {
             }else if ("ip".equals(type)){
                 newCam = new Camera(id, name, type, ipAddress, "", location);
                 Configuration.get().addCamera(newCam);
+            }
+            if(newCam != null){
+                CamProcessingManager.addCamera(newCam);
             }
             response.getWriter().write(new Gson().toJson(newCam));
         } catch (JsonSyntaxException e) {

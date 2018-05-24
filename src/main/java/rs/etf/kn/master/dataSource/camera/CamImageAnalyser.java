@@ -54,6 +54,7 @@ public class CamImageAnalyser extends Thread implements CamImageFetcher.CamImage
         double minDistance = 1 / camStreetConfig.getMetersPerPixelRatio();
         int maxCorners = (int) (imgSize / (minDistance * minDistance));
         Imgproc.goodFeaturesToTrack(img, corners, maxCorners, 0.01, minDistance);
+        corners.convertTo(pts, CvType.CV_32F);
         return pts;
     }
 

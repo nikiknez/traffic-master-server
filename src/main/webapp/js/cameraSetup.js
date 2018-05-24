@@ -80,10 +80,14 @@ function initCameraSetup() {
         console.log(p);
         $.post("AddCameraServlet", $.param(p), function (c) {
             console.log(c);
+            var cam;
             if (c.type === "ip") {
-                cameras.push(new IpCamera(c.name, c.location, c.ipAddress));
-            } else if(c.type === "file"){
-                cameras.push(new FileCamera(c.name, c.location, c.videoFileName));
+                cam = new IpCamera(c.name, c.location, c.ipAddress);
+            } else if (c.type === "file") {
+                cam = new FileCamera(c.name, c.location, c.videoFileName);
+            }
+            if (cam) {
+                cameras.push(cam);
             }
         });
     });

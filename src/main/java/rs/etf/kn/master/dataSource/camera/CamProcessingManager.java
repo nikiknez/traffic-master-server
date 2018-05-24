@@ -3,6 +3,7 @@ package rs.etf.kn.master.dataSource.camera;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,12 +16,10 @@ public class CamProcessingManager {
 
     private static final Logger LOG = Logger.getLogger(CamProcessingManager.class.getName());
 
-    private static ConcurrentHashMap<Camera, CamImageFetcher> fetchers;
-    private static ConcurrentHashMap<String, CamImageAnalyser> analysers;
+    private static Map<Camera, CamImageFetcher> fetchers = new ConcurrentHashMap<>();
+    private static Map<String, CamImageAnalyser> analysers = new ConcurrentHashMap<>();
 
     public static void initialize() {
-        fetchers = new ConcurrentHashMap<>();
-        analysers = new ConcurrentHashMap<>();
         for (Camera c : Configuration.get().getCameras()) {
             try {
                 CamImageFetcher fetcher = CamImageFetcher.create(c);
@@ -62,7 +61,7 @@ public class CamProcessingManager {
         }
     }
 
-    public void addCamera(Camera c) {
+    public static void addCamera(Camera c) {
         try {
             CamImageFetcher fetcher = CamImageFetcher.create(c);
             fetcher.start();
@@ -72,8 +71,11 @@ public class CamProcessingManager {
         }
     }
 
-    public void addCameraConfig(Camera c, CamStreetConfig config, BufferedImage reperImage) throws InterruptedException {
+    public static void addCameraConfig(Camera c, CamStreetConfig config, BufferedImage reperImage) throws InterruptedException {
         CamImageFetcher fetcher = fetchers.get(c);
+        if (fetcher == null) {
+            return;
+        }
         CamImageAnalyser analyser = analysers.get(config.getStreetId());
         if (analyser != null) {
             fetcher.removeListener(analyser);
