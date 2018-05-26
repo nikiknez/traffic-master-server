@@ -16,6 +16,8 @@ import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.video.Video;
+import rs.etf.kn.master.dataSource.StreetData;
+import rs.etf.kn.master.dataSource.StreetDataManager;
 import rs.etf.kn.master.model.CamStreetConfig;
 import rs.etf.kn.master.opencv.OpenCV;
 import rs.etf.kn.master.opencv.PerspectiveTransformator;
@@ -78,14 +80,36 @@ public class CamImageAnalyser extends Thread implements CamImageFetcher.CamImage
 
                 List<MotionVector> motionVectors = calcOpticalFlow(lastFrameROI, nextFrameROI, matLastPoints);
 
-                for (MotionVector motion : motionVectors) {
-
-                }
-
+                processMotionVectors(motionVectors, timeDiff);
+                
+                lastFrame = nextFrame;
+                lastFrameROI = nextFrameROI;
             }
         } catch (InterruptedException ex) {
             Logger.getLogger(CamImageAnalyser.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    private void processMotionVectors(List<MotionVector> vectors, long timeDiff) {
+        int totalVectors = vectors.size();
+        int totalMotions = 0;
+        double totalDistance = 0;
+        for (MotionVector motion : vectors) {
+            double distance = motion.distance(camStreetConfig.getMetersPerPixelRatio());
+            if (distance > 0.5) {
+                totalMotions++;
+                totalDistance += distance;
+            }
+        }
+        double avgDistance = totalDistance / totalMotions;
+        
+        double intensity = avgDistance / timeDiff;
+        
+        forwardResult((int) intensity);
+    }
+
+    private void forwardResult(int intensity) {
+        StreetDataManager.addStreetData("cam", camStreetConfig.getStreetId(), new StreetData(intensity));
     }
 
     public synchronized void stopProcessing() {
