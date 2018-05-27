@@ -61,7 +61,23 @@ $(document).ready(function () {
     initStreetDrawing();
 
     initCameraSetup();
+    
+    initTrafficDataFetching();
 });
+
+function initTrafficDataFetching() {
+    function getTraficData () {
+        $.get("GetTrafficDataServlet", function(data) {
+            for(var source in data) {
+                for(var street in data[source].data) {
+                    console.log(street + ": " + data[source].data[street].intensity);
+                }
+            }
+            setTimeout(getTraficData, 3000);
+        });
+    }
+    setTimeout(getTraficData, 3000);
+}
 
 function mapRightClickCallback(event) {
     if(drawingMode || streetSelectMode || camSelectMode){

@@ -86,7 +86,7 @@ public class CamImageAnalyser extends Thread implements CamImageFetcher.CamImage
                 lastFrameROI = nextFrameROI;
             }
         } catch (InterruptedException ex) {
-            Logger.getLogger(CamImageAnalyser.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CamImageAnalyser.class.getName()).log(Level.SEVERE, "stoped analyzing street " + camStreetConfig.getStreetId());
         }
     }
 

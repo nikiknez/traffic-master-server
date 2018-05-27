@@ -78,7 +78,7 @@ function IpCamera(name, location, ipAddr) {
                 $.post("DownloadFrameServlet", $.param(p), function (responseText) {
                     var b64 = btoa(unescape(encodeURIComponent(responseText)));
                     console.log(b64);
-                    new Image().src = "data:image/jpg;base64," + b64;
+//                    cam.img.src = "data:image/jpg;base64," + b64;
                 });
             }
             isPaused = true;

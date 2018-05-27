@@ -50,10 +50,10 @@ public class AddCameraServlet extends HttpServlet {
                 String srcFile = Configuration.TEMP_DIR + "upload.mp4";
                 String dstFile = Configuration.VIDEOS_DIR + id + ".mp4";
                 Files.move(Paths.get(srcFile), Paths.get(dstFile), StandardCopyOption.REPLACE_EXISTING);
-                newCam = new Camera(id, name, type, "", "/videos/" + id + ".mp4", location);
+                newCam = new Camera(id, name, type, null, "/videos/" + id + ".mp4", location);
                 Configuration.get().addCamera(newCam);
             }else if ("ip".equals(type)){
-                newCam = new Camera(id, name, type, ipAddress, "", location);
+                newCam = new Camera(id, name, type, ipAddress, null, location);
                 Configuration.get().addCamera(newCam);
             }
             if(newCam != null){

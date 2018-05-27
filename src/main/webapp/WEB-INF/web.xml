@@ -52,6 +52,10 @@
         <servlet-name>SaveCameraConfigServlet</servlet-name>
         <servlet-class>rs.etf.kn.master.servlets.SaveCameraConfigServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>GetTrafficDataServlet</servlet-name>
+        <servlet-class>rs.etf.kn.master.servlets.GetTrafficDataServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>StartServlet</servlet-name>
         <url-pattern>/StartServlet</url-pattern>
@@ -99,6 +103,10 @@
     <servlet-mapping>
         <servlet-name>SaveCameraConfigServlet</servlet-name>
         <url-pattern>/SaveCameraConfigServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetTrafficDataServlet</servlet-name>
+        <url-pattern>/GetTrafficDataServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

@@ -5,27 +5,19 @@
  */
 package rs.etf.kn.master.servlets;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
-import java.awt.geom.Point2D;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import javax.imageio.ImageIO;
+import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import rs.etf.kn.master.model.Configuration;
-import rs.etf.kn.master.opencv.OpenCV;
-import rs.etf.kn.master.opencv.PerspectiveTransformator;
+import rs.etf.kn.master.dataSource.StreetDataManager;
 
 /**
  *
  * @author NikLik
  */
-public class ConfigCameraServlet extends HttpServlet {
+public class GetTrafficDataServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -37,33 +29,11 @@ public class ConfigCameraServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-
-        try {
-            BufferedImage pausedFrame = (BufferedImage) request.getSession().getAttribute("currentFrame");
-            
-            String videoFileName = request.getParameter("videoFileName");
-            String videoTime = request.getParameter("videoTime");
-            if(videoFileName != null && videoTime != null){
-                double videoTimeValue = Double.parseDouble(videoTime);
-                pausedFrame = OpenCV.readFrame(Configuration.BASE_DIR + videoFileName, videoTimeValue);
-                request.getSession().setAttribute("currentFrame", pausedFrame);
-            }
-
-            String poly = request.getParameter("poly");
-            Point2D.Float[] polyPoints = new Gson().fromJson(poly, Point2D.Float[].class);
-            OpenCV.scalePoints(polyPoints, pausedFrame.getWidth(), pausedFrame.getHeight());
-            PerspectiveTransformator.sortPoints(polyPoints);
-            request.getSession().setAttribute("configCameraPolygon", polyPoints);
-            BufferedImage outImg = PerspectiveTransformator.fourPointTransform(pausedFrame, polyPoints);
-            request.getSession().setAttribute("transformedImage", outImg);
-            ImageIO.write(outImg, "jpg", new File(Configuration.TEMP_DIR + "transformed.jpg"));
-            
-            response.getWriter().write("ok");
-        } catch (NumberFormatException | JsonSyntaxException | NullPointerException | FileNotFoundException e) {
-            response.getWriter().write(e.getMessage());
-        }
-
+        response.setContentType("application/json");
+        
+        String trafficData = StreetDataManager.toJSON();
+        
+        response.getWriter().write(trafficData);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

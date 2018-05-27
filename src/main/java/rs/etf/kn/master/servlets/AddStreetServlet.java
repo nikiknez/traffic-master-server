@@ -33,14 +33,14 @@ public class AddStreetServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("application/json;charset=UTF-8");
+        response.setContentType("application/json");
 
         String path = request.getParameter("path");
 
         User owner = (User) request.getSession().getAttribute("user");
 
         Location[] p = new Gson().fromJson(path, Location[].class);
-        Street newStreet = new Street(Configuration.get().getNextId() + "", p, owner.getUsername(), "", "", "");
+        Street newStreet = new Street(Configuration.get().getNextId() + "", p, owner.getUsername(), null, null, null);
         
         LinkedList<Street> newStreets = (LinkedList<Street>) request.getSession().getAttribute("newStreets");
         if(newStreets == null){

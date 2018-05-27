@@ -87,6 +87,7 @@ function initCameraSetup() {
                 cam = new FileCamera(c.name, c.location, c.videoFileName);
             }
             if (cam) {
+                cam.id = c.id;
                 cameras.push(cam);
             }
         });
