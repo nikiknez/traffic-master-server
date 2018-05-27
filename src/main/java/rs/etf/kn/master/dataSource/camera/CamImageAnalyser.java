@@ -3,7 +3,6 @@ package rs.etf.kn.master.dataSource.camera;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
@@ -23,6 +22,8 @@ import rs.etf.kn.master.opencv.OpenCV;
 import rs.etf.kn.master.opencv.PerspectiveTransformator;
 
 public class CamImageAnalyser extends Thread implements CamImageFetcher.CamImageListener {
+
+    private static final Logger LOG = Logger.getLogger(CamImageAnalyser.class.getName());
 
     private boolean run = true;
     private CamStreetConfig camStreetConfig;
@@ -74,6 +75,7 @@ public class CamImageAnalyser extends Thread implements CamImageFetcher.CamImage
                 if (timeDiff > 1000) {
                     lastFrame = nextFrame;
                     lastFrameROI = nextFrameROI;
+                    LOG.severe("Time between frames > 1000 ms");
                     continue;
                 }
                 MatOfPoint2f matLastPoints = goodFeaturesToTrack(lastFrameROI);
@@ -81,12 +83,12 @@ public class CamImageAnalyser extends Thread implements CamImageFetcher.CamImage
                 List<MotionVector> motionVectors = calcOpticalFlow(lastFrameROI, nextFrameROI, matLastPoints);
 
                 processMotionVectors(motionVectors, timeDiff);
-                
+
                 lastFrame = nextFrame;
                 lastFrameROI = nextFrameROI;
             }
         } catch (InterruptedException ex) {
-            Logger.getLogger(CamImageAnalyser.class.getName()).log(Level.SEVERE, "stoped analyzing street " + camStreetConfig.getStreetId());
+            LOG.warning("stoped analyzing street " + camStreetConfig.getStreetId());
         }
     }
 
@@ -102,9 +104,9 @@ public class CamImageAnalyser extends Thread implements CamImageFetcher.CamImage
             }
         }
         double avgDistance = totalDistance / totalMotions;
-        
+
         double intensity = avgDistance / timeDiff;
-        
+
         forwardResult((int) intensity);
     }
 
@@ -131,7 +133,7 @@ public class CamImageAnalyser extends Thread implements CamImageFetcher.CamImage
         while (camImageQueue.isEmpty()) {
             wait();
         }
-        System.out.println("Analysing new image");
+        LOG.info("Analysing new image");
         return camImageQueue.remove(0);
     }
 
@@ -174,7 +176,7 @@ public class CamImageAnalyser extends Thread implements CamImageFetcher.CamImage
             return 0;
         }
         double sim = valid / total > 0.3 ? fix / valid : 0;
-        System.out.println("total = " + total + "   valid = " + valid + "   fix = " + fix + "   similarity = " + sim);
+        LOG.info("total = " + total + "   valid = " + valid + "   fix = " + fix + "   similarity = " + sim);
         return sim;
     }
 

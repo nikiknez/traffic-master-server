@@ -11,20 +11,24 @@ import rs.etf.kn.master.opencv.OpenCV;
 public class IpCamImageFetcher extends CamImageFetcher {
 
     private URL url;
+    private long lastFetchedTimestamp = 0;
+    private static final int FETCH_PERIOD_MS = 500;
 
     public IpCamImageFetcher(String source) throws MalformedURLException {
         url = new URL(source);
     }
 
     @Override
-    protected CamImage fetchImage() throws IOException {
-
+    protected CamImage fetchImage() throws IOException, InterruptedException {
+        long diff = System.currentTimeMillis() - lastFetchedTimestamp;
+        if (diff < FETCH_PERIOD_MS) {
+            Thread.sleep(FETCH_PERIOD_MS - diff);
+        }
+        lastFetchedTimestamp = System.currentTimeMillis();
         BufferedImage img = ImageIO.read(url);
-        long ts = System.currentTimeMillis();
-
         Mat matImg = OpenCV.bufferedImgToMat(img);
         Mat matImgGray = OpenCV.createGray(matImg);
-        return new CamImage(matImg, matImgGray, ts);
+        return new CamImage(matImg, matImgGray, lastFetchedTimestamp);
     }
 
 }

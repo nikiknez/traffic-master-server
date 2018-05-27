@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import rs.etf.kn.master.model.Camera;
 
 public abstract class CamImageFetcher extends Thread {
+    private static final Logger LOG = Logger.getLogger(CamImageFetcher.class.getName());
 
     private boolean run = true;
     private List<CamImageListener> listeners = new LinkedList<>();
@@ -20,14 +21,12 @@ public abstract class CamImageFetcher extends Thread {
         try {
             while (run) {
                 CamImage img = fetchImage();
-                System.out.println("Fetched anoter image");
                 for (CamImageListener l : listeners) {
                     l.onImageFetched(img);
                 }
-                Thread.sleep(400); // TODO
             }
         } catch (IOException | InterruptedException ex) {
-            Logger.getLogger(CamImageFetcher.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, "Fetcher stopped", ex);
         }
     }
 
@@ -57,12 +56,13 @@ public abstract class CamImageFetcher extends Thread {
 
     public static CamImageFetcher create(Camera c) throws FileNotFoundException, MalformedURLException {
         if ("ip".equals(c.getType())) {
+//            throw  new MalformedURLException();
             return new IpCamImageFetcher(c.getIpAddress());
         }
         return new FileCamImageFetcher(c.getVideoFileName());
     }
 
-    protected abstract CamImage fetchImage() throws IOException;
+    protected abstract CamImage fetchImage() throws IOException, InterruptedException;
 
     public interface CamImageListener {
 

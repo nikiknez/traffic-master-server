@@ -22,13 +22,13 @@ public class FileCamImageFetcher extends CamImageFetcher {
     }
 
     @Override
-    protected CamImage fetchImage() throws IOException {
+    protected CamImage fetchImage() throws IOException, InterruptedException {
+        Thread.sleep(100);
         boolean success = fileSource.read(currentFrame);
         if (!success) {
             throw new IOException("End of video file");
         }
         long ts = (long) fileSource.get(0);
-        
         Mat matImgGray = OpenCV.createGray(currentFrame);
         return new CamImage(currentFrame, matImgGray, ts);
     }
