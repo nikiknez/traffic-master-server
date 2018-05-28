@@ -75,7 +75,7 @@ function IpCamera(name, location, ipAddr) {
                 $(configButton).removeClass("hidden");
                 var p = {url: ipAddr};
                 console.log("sending request");
-                $.post("DownloadFrameServlet", $.param(p), function (responseText) {
+                $.post("SaveCurrentFrameServlet", $.param(p), function (responseText) {
                     var b64 = btoa(unescape(encodeURIComponent(responseText)));
                     console.log(b64);
 //                    cam.img.src = "data:image/jpg;base64," + b64;

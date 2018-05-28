@@ -1,22 +1,12 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package rs.etf.kn.master.servlets;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import rs.etf.kn.master.dataSource.StreetDataManager;
 
-/**
- *
- * @author NikLik
- */
 public class GetTrafficDataServlet extends HttpServlet {
 
     /**
@@ -30,9 +20,9 @@ public class GetTrafficDataServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("application/json");
-        
+
         String trafficData = StreetDataManager.toJSON();
-        
+
         response.getWriter().write(trafficData);
     }
 

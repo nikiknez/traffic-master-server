@@ -33,8 +33,8 @@
         <servlet-class>rs.etf.kn.master.servlets.ConfigCameraServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>DownloadFrameServlet</servlet-name>
-        <servlet-class>rs.etf.kn.master.servlets.DownloadFrameServlet</servlet-class>
+        <servlet-name>SaveCurrentFrameServlet</servlet-name>
+        <servlet-class>rs.etf.kn.master.servlets.SaveCurrentFrameServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>LoginServlet</servlet-name>
@@ -85,8 +85,8 @@
         <url-pattern>/ConfigCameraServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>DownloadFrameServlet</servlet-name>
-        <url-pattern>/DownloadFrameServlet</url-pattern>
+        <servlet-name>SaveCurrentFrameServlet</servlet-name>
+        <url-pattern>/SaveCurrentFrameServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
