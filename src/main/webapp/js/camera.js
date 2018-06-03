@@ -5,8 +5,7 @@ function IpCamera(name, location, ipAddr) {
     this.name = name;
     this.ipAddr = ipAddr;
     this.myStreets = [];
-    this.enterStreetSelectMode = enterStreetSelectMode;
-    this.exitStreetSelectMode = exitStreetSelectMode;
+
     var cam = this;
 
     var div = document.createElement("div");
@@ -29,7 +28,7 @@ function IpCamera(name, location, ipAddr) {
     configButton.innerHTML = "Konfigurisi kameru";
     div.appendChild(configButton);
     $(configButton).click(function () {
-        cam.enterStreetSelectMode();
+        enterStreetSelectMode(cam);
     });
 
     cam.marker = new google.maps.Marker({
@@ -44,7 +43,7 @@ function IpCamera(name, location, ipAddr) {
         }
         if (camSelectMode) {
             cam.myStreets.push(selectedStreet.id);
-            selectedStreet.exitCamSelectMode(cam);
+            exitCamSelectMode(cam);
             return;
         }
         if (!isInfoWOpen) {
@@ -129,8 +128,7 @@ function FileCamera(name, location, file) {
     this.name = name;
     this.file = file;
     this.myStreets = [];
-    this.enterStreetSelectMode = enterStreetSelectMode;
-    this.exitStreetSelectMode = exitStreetSelectMode;
+    
     var cam = this;
 
     var div = document.createElement("div");
@@ -157,7 +155,7 @@ function FileCamera(name, location, file) {
     configButton.innerHTML = "Konfigurisi kameru";
     div.appendChild(configButton);
     $(configButton).click(function () {
-        cam.enterStreetSelectMode();
+        enterStreetSelectMode(cam);
     });
 
     var marker = new google.maps.Marker({
@@ -172,7 +170,7 @@ function FileCamera(name, location, file) {
         }
         if (camSelectMode) {
             cam.myStreets.push(selectedStreet.id);
-            selectedStreet.exitCamSelectMode(cam);
+            exitCamSelectMode(cam);
             return;
         }
         if (!isInfoWOpen) {
@@ -235,14 +233,14 @@ function FileCamera(name, location, file) {
     };
 }
 
-function enterStreetSelectMode() {
+function enterStreetSelectMode(cam) {
     streetSelectMode = true;
     map.setOptions({disableDefaultUI: true});
     $("#centerControlDiv").hide();
     $("#userControlDiv").hide();
     $("#info5").removeClass("hidden");
     $("#streetSelectDiv").removeClass("hidden");
-    selectedCam = this;
+    selectedCam = cam;
     var i;
     for (i = 0; i < cameras.length; i++) {
         if (cameras[i] !== selectedCam) {

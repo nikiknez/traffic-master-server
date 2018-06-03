@@ -109,7 +109,7 @@ function initCameraSetup() {
     }
 
     $("#cancleStreetSelectButton").click(function () {
-        selectedCam.exitStreetSelectMode();
+        exitStreetSelectMode();
     });
 
     $('#addCameraModal').on('hidden.bs.modal', function () {
@@ -118,21 +118,23 @@ function initCameraSetup() {
         $("#uploadFileButton").addClass("hidden");
         file = null;
     });
-}
-function assignCamIdToStreets(camId, streetIds) {
-    for (var s in streets) {
-        for (var si in streetIds) {
-            if (streets[s].id === streetIds[si]) {
-                streets[s].camId = camId;
+    
+    function assignCamIdToStreets(camId, streetIds) {
+        for (var s in streets) {
+            for (var si in streetIds) {
+                if (streets[s].id === streetIds[si]) {
+                    streets[s].camId = camId;
+                    break;
+                }
             }
         }
     }
-}
 
-function extractStreetIds(streets) {
-    var r = [];
-    for (var s in streets) {
-        r.push(streets[s].streetId);
+    function extractStreetIds(streets) {
+        var r = [];
+        for (var s in streets) {
+            r.push(streets[s].streetId);
+        }
+        return r;
     }
-    return r;
 }

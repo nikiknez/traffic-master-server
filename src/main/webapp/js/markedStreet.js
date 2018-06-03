@@ -13,16 +13,12 @@ function MarkedStreet(polyLine, options) {
         self.ValidTo = options.ValidTo;
     }
     
-    self.openContextMenu = openContextMenu;
-    self.enterCamSelectMode = enterCamSelectMode;
-    self.exitCamSelectMode = exitCamSelectMode;
-    
     google.maps.event.addListener(self.polyLine, 'rightclick', function (e) {
         if (!camSelectMode && !drawingMode && !streetSelectMode && !self.camId) {
             selectedStreet = self;
             console.log(e);
             console.log(e.Ia);
-            self.openContextMenu(e.Ia);
+            openContextMenu(e.Ia);
         }
     });
 
@@ -32,7 +28,7 @@ function MarkedStreet(polyLine, options) {
     google.maps.event.addListener(self.polyLine, 'click', function (e) {
         if (streetSelectMode) {
             if (selectedCam.id === self.camId) {
-                selectedCam.exitStreetSelectMode(self);
+                exitStreetSelectMode(self);
             } else {
                 // error
             }
@@ -46,7 +42,7 @@ function MarkedStreet(polyLine, options) {
 }
 
 $("#bindToCamButton").click(function () {
-    selectedStreet.enterCamSelectMode();
+    enterCamSelectMode();
 });
 
 $("#streetInfoButton").click(function () {
@@ -59,7 +55,7 @@ $('#streetInfoModal').on('hidden.bs.modal', function () {
 });
 
 $("#cancleCamSelectButton").click(function () {
-    selectedStreet.exitCamSelectMode();
+    exitCamSelectMode();
 });
 
 $("#saveStreetInfoButton").click(function () {
