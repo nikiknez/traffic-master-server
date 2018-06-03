@@ -1,10 +1,17 @@
 package rs.etf.kn.master.model;
 
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.PrintWriter;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -24,7 +31,6 @@ public class Configuration {
     public static final String REPERS_DIR = BASE_DIR + "repers/";
     public static final String TEMP_DIR = BASE_DIR + "temp/";
     private static final String CONFIG_FILE_PATH = BASE_DIR + "config.json";
-    
 
     private static Configuration config = null;
 
@@ -64,10 +70,6 @@ public class Configuration {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
-    }
-
-    public String toJson() {
-        return new Gson().toJson(this);
     }
 
     public List<Camera> getCameras() {
@@ -143,14 +145,40 @@ public class Configuration {
         }
         return null;
     }
-    
+
     public Street getStreetById(String id) {
-        for(Street s : streets){
-            if(s.getId().equals(id)){
+        for (Street s : streets) {
+            if (s.getId().equals(id)) {
                 return s;
             }
         }
         return null;
     }
 
+    private static Gson createGsonSerializer() {
+        return new GsonBuilder().addSerializationExclusionStrategy(new ExclusionStrategy() {
+            @Override
+            public boolean shouldSkipField(FieldAttributes fa) {
+                return fa.getName().equals("users") || fa.getName().equals("lastId");
+            }
+
+            @Override
+            public boolean shouldSkipClass(Class<?> type) {
+                return false;
+            }
+        }).registerTypeAdapter(CamStreetConfig.class, new JsonSerializer<CamStreetConfig>() {
+            @Override
+            public JsonElement serialize(CamStreetConfig t, Type type, JsonSerializationContext jsc) {
+                JsonObject c = new JsonObject();
+                c.addProperty("streetId", t.getStreetId());
+                return c;
+            }
+        }).create();
+    }
+
+    private static Gson serializer = createGsonSerializer();
+
+    public String toJson() {
+        return serializer.toJson(this);
+    }
 }
