@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import rs.etf.kn.master.model.Camera;
 
 public abstract class CamImageFetcher extends Thread {
+
     private static final Logger LOG = Logger.getLogger(CamImageFetcher.class.getName());
 
     private boolean run = true;
@@ -21,8 +22,12 @@ public abstract class CamImageFetcher extends Thread {
         try {
             while (run) {
                 CamImage img = fetchImage();
+                boolean consumed = true;
                 for (CamImageListener l : listeners) {
-                    l.onImageFetched(img);
+                    consumed &= l.onImageFetched(img);
+                }
+                if (!consumed) {
+                    Thread.sleep(5000);
                 }
             }
         } catch (IOException | InterruptedException ex) {
@@ -49,7 +54,7 @@ public abstract class CamImageFetcher extends Thread {
         listeners.add(l);
         notify();
     }
-    
+
     public synchronized void removeListener(CamImageListener l) {
         listeners.remove(l);
     }
