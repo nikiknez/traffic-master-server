@@ -10,7 +10,7 @@ function initStreetDrawing() {
             map: map
         });
         var street = new MarkedStreet(gpoly, s);
-        streets.push(street);
+        streets[street.id] = street;
     }
 
     $("#markStreetContextButton").click(function () {
@@ -37,13 +37,13 @@ function initStreetDrawing() {
         exitDrawingMode();
 
         var street = new MarkedStreet(newStreetPolyline);
-        streets.push(street);
         
         var p = {path: JSON.stringify(newStreetPolyline.getPath().b)};
         $.post("AddStreetServlet", $.param(p), function (response) {
             console.log(response);
             street.owner = response.owner;
             street.id = response.id;
+            streets[street.id] = street;
         });
         newStreetPolyline = null;
     });
