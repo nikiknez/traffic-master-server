@@ -292,7 +292,7 @@
         </div>
 
         <script
-            src="https://maps.googleapis.com/maps/api/js?language=sr&key=AIzaSyCLkb6Lq5jY0P6YOJKV7LnIqodYLC7U6es">
+            src="https://maps.googleapis.com/maps/api/js?language=sr&key=AIzaSyCT5XMY1YeBcvRNHpje04pmrgQ0WeKzCso">
         </script>
         
         <script>
