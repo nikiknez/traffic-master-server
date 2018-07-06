@@ -21,4 +21,8 @@ public class StreetDataSource {
     public void addData(String streetId, int intensity) {
         data.put(streetId, new StreetData(intensity));
     }
+
+    public StreetData getData(String streetId) {
+        return data.get(streetId);
+    }
 }

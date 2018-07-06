@@ -19,6 +19,13 @@ public class StreetDataManager {
         sources.put(source.id, source);
     }
 
+    public static StreetDataSource getDataSource(String id) {
+        StreetDataSource s = sources.get(id);
+        if(s != null)
+            return s;
+        return addDataSource(id);
+    }
+
     public static void addStreetData(String sourceId, String streetId, StreetData d) {
         StreetDataSource source = sources.get(sourceId);
         if (source == null) {

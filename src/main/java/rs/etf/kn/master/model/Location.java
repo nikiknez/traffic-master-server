@@ -24,4 +24,10 @@ public class Location {
     public void setLng(double lng) {
         this.lng = lng;
     }
+
+    public boolean equals(Location l) {
+        return lat == l.lat && lng == l.lng;
+    }
+    
+    
 }
