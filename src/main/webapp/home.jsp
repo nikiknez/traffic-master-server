@@ -193,7 +193,7 @@
 
         <!--Login control-->
         <div id="userControlDiv">
-            <button id="justMyChangesButton" class="btn btn-default hidden">Prikazi samo moje izmene</button>
+            <button id="justMyChangesButton" class="btn btn-default hidden">Prikazi samo moje podatke</button>
             <button id="addAccountButton" class="btn btn-default hidden" data-toggle="modal" 
                     data-target="#dodajNalogModal">Dodaj nalog</button>
             <button id="showLoginButton" class="btn btn-default" data-toggle="modal" 

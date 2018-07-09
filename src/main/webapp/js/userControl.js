@@ -106,7 +106,22 @@ function initUserControl() {
     });
     
     $("#justMyChangesButton").click(function () {
-        
+        var shouldHide = !$("#justMyChangesButton")[0].shouldHide;
+        console.log("should hide = " + shouldHide);
+        for (var i in streets) {
+            var s = streets[i];
+            if(s.owner !== currentUser && shouldHide) {
+                s.polyLine.setVisible(false);
+            }else{
+                s.polyLine.setVisible(true);
+            }
+        }
+        if(shouldHide){
+            $("#justMyChangesButton").text("Prikazi sve podatke");
+        }else{
+            $("#justMyChangesButton").text("Prikazi samo moje podatke");
+        }
+        $("#justMyChangesButton")[0].shouldHide = shouldHide;
     });
 }
 
