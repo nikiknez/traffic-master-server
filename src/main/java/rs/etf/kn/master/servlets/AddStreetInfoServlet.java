@@ -6,7 +6,6 @@
 package rs.etf.kn.master.servlets;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.LinkedList;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -38,8 +37,17 @@ public class AddStreetInfoServlet extends HttpServlet {
         String from = request.getParameter("from");
         String to = request.getParameter("to");
         
-        LinkedList<Street> newStreets = (LinkedList<Street>) request.getSession().getAttribute("newStreets");
+        for(Street s: Configuration.get().getStreets()){
+            if(s.getId().equals(id)){
+                s.setInfoText(infoText);
+                s.setValidFrom(from);
+                s.setValidTo(to);
+                response.getWriter().write("ok");
+                return;
+            }
+        }
         
+        LinkedList<Street> newStreets = (LinkedList<Street>) request.getSession().getAttribute("newStreets");
         for(Street s: newStreets){
             if(s.getId().equals(id)){
                 s.setInfoText(infoText);
