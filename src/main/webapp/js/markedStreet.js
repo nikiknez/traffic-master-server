@@ -13,12 +13,10 @@ function MarkedStreet(polyLine, options) {
         self.ValidTo = options.ValidTo;
     }
     
-    google.maps.event.addListener(self.polyLine, 'rightclick', function (e) {
+    polyLine.addListener('rightclick', function (e) {
         if (!camSelectMode && !drawingMode && !streetSelectMode && !self.camId) {
             selectedStreet = self;
-            console.log(e);
-            console.log(e.Ia);
-            openContextMenu(e.Ia);
+            openContextMenu(e.Ha);
         }
     });
 
@@ -39,6 +37,22 @@ function MarkedStreet(polyLine, options) {
             iw.open(map);
         }
     });
+    
+    self.setStreetData = function (data) {
+        console.log("street " + self.id + " got data: " + data);
+        self.data = data;
+        self.polyLine.setOptions({strokeColor: intensityToColorMap(data.intensity)});
+    };
+}
+
+function intensityToColorMap(intensity) {
+    if (intensity > 10) {
+        return 'green';
+    }
+    if (intensity > 5) {
+        return 'yellow';
+    }
+    return 'red';
 }
 
 $("#bindToCamButton").click(function () {

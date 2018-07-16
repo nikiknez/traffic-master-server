@@ -23,6 +23,9 @@ $(document).ready(function () {
             mapTypeIds: ['roadmap', 'satellite']
         }
     });
+//    var trafficLayer = new google.maps.TrafficLayer();
+//    trafficLayer.setMap(map);
+
 //    map.mapTypes.satellite.name = 'Satelit';
 //    map.mapTypes.roadmap.name = 'Mapa';
 //    map.setOptions({'mapTypeControl': true});
@@ -43,7 +46,7 @@ $(document).ready(function () {
     }
 
     map.addListener("rightclick", mapRightClickCallback);
-    
+
     $("body").contextmenu(function (e) {
         e.preventDefault();
         e.stopPropagation();
@@ -53,7 +56,7 @@ $(document).ready(function () {
     $(document.body).click(function () {
         $(".contextMenu").addClass("hidden");
     });
-    
+
     initCenterControl();
 
     initUserControl();
@@ -61,30 +64,63 @@ $(document).ready(function () {
     initStreetDrawing();
 
     initCameraSetup();
-    
+
     initTrafficDataFetching();
 });
 
+var mobileStreetPaths = [];
+var showMobileData = true;
+function displayMobileData(visible) {
+    showMobileData = visible;
+    for(var p in mobileStreetPaths){
+        mobileStreetPaths[p].setVisible(visible);
+    }
+}
+function updateMobileStreetData(streetId, streetData) {
+    var po = {
+        map: map,
+        strokeWeight: 3,
+        strokeColor: intensityToColorMap(streetData.intensity),
+        path: streetData.path,
+        visible: showMobileData
+    };
+    var streetPolyLine = mobileStreetPaths[streetId];
+    if (streetPolyLine) {
+        streetPolyLine.setOptions(po);
+    } else {
+        mobileStreetPaths[streetId] = new google.maps.Polyline(po);
+    }
+}
 function initTrafficDataFetching() {
-    function getTraficData () {
-        $.get("GetTrafficDataServlet", function(data) {
-            for(var source in data) {
-                for(var street in data[source].data) {
-                    console.log(street + ": " + data[source].data[street].intensity);
+    function getTraficData() {
+        $.get("GetTrafficDataServlet", function (data) {
+            for (var source in data) {
+                var streetsData = data[source].data;
+                for (var streetId in streetsData) {
+                    var streetData = streetsData[streetId];
+                    console.log(streetId + ": " + streetData.intensity);
+                    var s = streets[streetId];
+                    if (s) {
+                        s.setStreetData(streetData);
+                    } else {
+                        // (mobile data)
+                        updateMobileStreetData(streetId, streetData);
+                    }
                 }
             }
-            setTimeout(getTraficData, 3000);
+        }).always(function () {
+//            setTimeout(getTraficData, 5000);
         });
     }
     setTimeout(getTraficData, 3000);
 }
 
 function mapRightClickCallback(event) {
-    if(drawingMode || streetSelectMode || camSelectMode){
+    if (drawingMode || streetSelectMode || camSelectMode) {
         return;
     }
     $(".contextMenu").addClass("hidden");
-    
+
     var cMenu = $("#contextMenu");
     cMenu.removeClass("hidden");
 
@@ -112,4 +148,23 @@ function mapRightClickCallback(event) {
 function reload_js(src) {
     $('script[src="js/' + src + '.js"]').remove();
     $('<script>').attr('src', 'js/' + src + '.js').appendTo('head');
+}
+
+function drawBounds(placeId) {
+    var geocoder = new google.maps.Geocoder();
+    placeId = placeId || "ChIJvTbSImJlWkcRj7p3QMKD84Q";
+    geocoder.geocode({'placeId': placeId}, function (results, status) {
+        if (status !== 'OK') {
+            window.alert('Geocoder failed due to: ' + status);
+            return;
+        }
+        var b = results[0].geometry.bounds;
+        console.log(b);
+
+        new google.maps.Rectangle({
+            map: map,
+            bounds: {north: b.f.b, south: b.f.f, west: b.b.b, east: b.b.f}
+        });
+
+    });
 }
