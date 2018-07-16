@@ -2,19 +2,21 @@ var currentUser = null;
 
 function initUserControl() {
 
-    function adminLoginAction() {
-        $("#addAccountButton").removeClass("hidden");
-        $("#saveViewButton").removeClass("hidden");
-        $("#addCameraContextButton").removeClass("hidden");
-
-        currentUser = "admin";
-    }
-
-    function userLoginAction(username) {
-        $("#markStreetContextButton").removeClass("hidden");
+    function loginAction() {
         $("#justMyChangesButton").removeClass("hidden");
+        if (currentUser.username === "admin") {
+            $("#addAccountButton").removeClass("hidden");
+            $("#saveViewButton").removeClass("hidden");
+        }
+        if (currentUser.canAddCamera) {
+            $("#addCameraContextButton").removeClass("hidden");
+        }
+        if (currentUser.canAddStreet) {
+            $("#markStreetContextButton").removeClass("hidden");
+        }
+        if (currentUser.canAddMark) {
 
-        currentUser = username;
+        }
     }
 
     function logoutAction() {
@@ -47,14 +49,10 @@ function initUserControl() {
         $.post("LoginServlet", $.param(p), function (user) {
             console.log(user);
             if (JSON.stringify(user) !== "{}") {
-                if (username === "admin") {
-                    adminLoginAction();
-                } else {
-                    userLoginAction(username);
-                }
+                currentUser = user;
+                loginAction();
                 $("#showLoginButton").addClass("hidden");
                 $("#logoutButton").removeClass("hidden");
-                $("#markStreetContextButton").removeClass("hidden");
                 $("#loginModal").modal("hide");
                 $("#logoutButton").html(user.name + " | <b>Odjavi se</b>");
             } else {
@@ -115,7 +113,7 @@ function initUserControl() {
         console.log("should hide = " + shouldHide);
         for (var i in streets) {
             var s = streets[i];
-            if (s.owner !== currentUser && shouldHide) {
+            if (shouldHide && s.owner !== currentUser.username) {
                 s.polyLine.setVisible(false);
             } else {
                 s.polyLine.setVisible(true);

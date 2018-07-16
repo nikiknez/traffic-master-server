@@ -4,19 +4,19 @@ var camSelectMode = false;
 function MarkedStreet(polyLine, options) {
     var self = this;
     self.polyLine = polyLine;
-    
-    if(options){
+
+    if (options) {
         self.id = options.id;
         self.owner = options.owner;
         self.infoText = options.infoText;
         self.validFrom = options.validFrom;
         self.ValidTo = options.ValidTo;
     }
-    
+
     polyLine.addListener('rightclick', function (e) {
         if (!camSelectMode && !drawingMode && !streetSelectMode && !self.camId) {
             selectedStreet = self;
-            openContextMenu(e.Ha);
+            openStreetContextMenu(e.Ha);
         }
     });
 
@@ -37,7 +37,7 @@ function MarkedStreet(polyLine, options) {
             iw.open(map);
         }
     });
-    
+
     self.setStreetData = function (data) {
         console.log("street " + self.id + " got data: " + data);
         self.data = data;
@@ -84,7 +84,7 @@ $("#saveStreetInfoButton").click(function () {
     var p = {id: selectedStreet.id, info: text, from: from, to: to};
     $.post("AddStreetInfoServlet", $.param(p), function (responseText) {
         if (responseText === "ok") {
-            
+
         }
         console.log(responseText);
     });
@@ -93,14 +93,14 @@ $("#saveStreetInfoButton").click(function () {
     selectedStreet = null;
 });
 
-function openContextMenu(event) {
+function openStreetContextMenu(event) {
     $(".contextMenu").addClass("hidden");
     $("#bindToCamButton").addClass("hidden");
-    if (!selectedStreet.camId && selectedStreet.owner === "admin" && currentUser === "admin") {
+    if (!selectedStreet.camId && selectedStreet.owner === currentUser.username && currentUser.canAddCamera) {
         $("#bindToCamButton").removeClass("hidden");
     }
     $("#streetInfoButton").addClass("hidden");
-    if (!selectedStreet.camId && selectedStreet.owner === currentUser && currentUser !== "admin") {
+    if (!selectedStreet.camId && selectedStreet.owner === currentUser.username && currentUser.canAddStreet) {
         $("#streetInfoButton").removeClass("hidden");
         if (selectedStreet.infoText) {
             $("#streetInfoButton").text("Izmeni informacije");
@@ -140,10 +140,12 @@ function enterCamSelectMode() {
 }
 function exitCamSelectMode(cam) {
     camSelectMode = false;
-    selectedStreet.camId = cam.id;
+    if (cam) {
+        selectedStreet.camId = cam.id;
+    }
     selectedStreet = null;
     map.setOptions({disableDefaultUI: false});
-    
+
     $("#centerControlDiv").show();
     $("#userControlDiv").show();
     $("#camSelectDiv").addClass("hidden");

@@ -70,7 +70,7 @@ function IpCamera(name, location, ipAddr) {
             clearInterval(cam.refreshInterval);
             cam.refreshInterval = null;
             pauseButton.innerHTML = "Nastavi";
-            if (currentUser === "admin" && cam.myStreets.length > 0) {
+            if (currentUser.canAddCamera && cam.myStreets.length > 0) {
                 $(configButton).removeClass("hidden");
                 var p = {url: ipAddr};
                 console.log("sending request");
@@ -194,7 +194,7 @@ function FileCamera(name, location, file) {
         }
         if (!isPaused) {
             pauseButton.innerHTML = "Nastavi";
-            if (currentUser === "admin" && cam.myStreets.length > 0) {
+            if (currentUser.canAddCamera && cam.myStreets.length > 0) {
                 $(configButton).removeClass("hidden");
             }
             video.pause();
