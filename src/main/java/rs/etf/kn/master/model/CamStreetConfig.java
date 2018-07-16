@@ -14,8 +14,8 @@ import java.awt.geom.Point2D;
 public class CamStreetConfig {
     
     private String streetId;
-    private Point2D.Float[] polyPoints = null;
     private float metersPerPixelRatio;
+    private Point2D.Float[] polyPoints = null;
 
     public CamStreetConfig(String streetId, Point2D.Float[] polyPoints, float metersPerPixelRatio) {
         this.streetId = streetId;

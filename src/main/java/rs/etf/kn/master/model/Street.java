@@ -1,12 +1,12 @@
 package rs.etf.kn.master.model;
 
 public class Street {
-    private Location[] path;
     private String owner;
     private String id;
     private String infoText;
     private String validFrom;
     private String validTo;
+    private Location[] path;
 
     public Street(String id, Location[] path, String owner, String infoText, String validFrom, String validTo) {
         this.id = id;

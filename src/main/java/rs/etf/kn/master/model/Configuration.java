@@ -5,7 +5,7 @@ import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import java.io.FileNotFoundException;
@@ -169,9 +169,7 @@ public class Configuration {
         }).registerTypeAdapter(CamStreetConfig.class, new JsonSerializer<CamStreetConfig>() {
             @Override
             public JsonElement serialize(CamStreetConfig t, Type type, JsonSerializationContext jsc) {
-                JsonObject c = new JsonObject();
-                c.addProperty("streetId", t.getStreetId());
-                return c;
+                return new JsonPrimitive(t.getStreetId());
             }
         }).create();
     }
