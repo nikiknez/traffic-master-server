@@ -5,6 +5,7 @@
  */
 package rs.etf.kn.master.servlets;
 
+import com.google.gson.Gson;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -29,7 +30,7 @@ public class LoginServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/plain;charset=UTF-8");
+        response.setContentType("application/json");
 
         String username = request.getParameter("username");
         String password = request.getParameter("password");
@@ -38,9 +39,12 @@ public class LoginServlet extends HttpServlet {
 
         if (u != null && u.getPassword().equals(password)) {
             request.getSession().setAttribute("user", u);
-            response.getWriter().write(u.getName());
+            u.setPassword(null);
+            String user = new Gson().toJson(u);
+            u.setPassword(password);
+            response.getWriter().write(user);
         } else {
-            response.getWriter().write("!");
+            response.getWriter().write("{}");
         }
 
     }

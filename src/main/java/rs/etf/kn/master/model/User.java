@@ -1,9 +1,14 @@
 package rs.etf.kn.master.model;
 
 public class User {
+
     private String name;
     private String username;
     private String password;
+
+    private boolean canAddCamera;
+    private boolean canAddStreet;
+    private boolean canAddMark;
 
     public User(String name, String username, String password) {
         this.name = name;
@@ -34,6 +39,29 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
-    
-    
+
+    public boolean isCanAddCamera() {
+        return canAddCamera;
+    }
+
+    public void setCanAddCamera(boolean canAddCamera) {
+        this.canAddCamera = canAddCamera;
+    }
+
+    public boolean isCanAddStreet() {
+        return canAddStreet;
+    }
+
+    public void setCanAddStreet(boolean canAddStreet) {
+        this.canAddStreet = canAddStreet;
+    }
+
+    public boolean isCanAddMark() {
+        return canAddMark;
+    }
+
+    public void setCanAddMark(boolean canAddMark) {
+        this.canAddMark = canAddMark;
+    }
+
 }
