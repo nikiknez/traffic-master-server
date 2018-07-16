@@ -59,60 +59,6 @@ public class PerspectiveTransformator {
         return new Dimension(maxWidth, maxHeight);
     }
 
-    public static Point2D.Float[] orderPoints(Point2D.Float[] points) {
-        Point2D.Float[] ordered = new Point2D.Float[4];
-
-        float[] sums = sumXYPoints(points);
-        ordered[0] = points[minIndex(sums)];
-        ordered[2] = points[maxIndex(sums)];
-
-        float[] diffs = diffXYPoints(points); // TODO: diff just rest of points
-        ordered[1] = points[minIndex(diffs)];
-        ordered[3] = points[maxIndex(diffs)];
-
-        return ordered;
-    }
-
-    private static float[] sumXYPoints(Point2D.Float[] points) {
-        float[] sums = new float[points.length];
-        for (int i = 0; i < points.length; i++) {
-            sums[i] = points[i].x + points[i].y;
-        }
-        return sums;
-    }
-
-    private static float[] diffXYPoints(Point2D.Float[] points) {
-        float[] diffs = new float[points.length];
-        for (int i = 0; i < points.length; i++) {
-            diffs[i] = points[i].y - points[i].x;
-        }
-        return diffs;
-    }
-
-    private static int minIndex(float[] a) {
-        int idx = 0;
-        float m = a[0];
-        for (int i = 0; i < a.length; i++) {
-            if (a[i] < m) {
-                m = a[i];
-                idx = i;
-            }
-        }
-        return idx;
-    }
-
-    private static int maxIndex(float[] a) {
-        int idx = 0;
-        float m = a[0];
-        for (int i = 0; i < a.length; i++) {
-            if (a[i] > m) {
-                m = a[i];
-                idx = i;
-            }
-        }
-        return idx;
-    }
-
     private static Point2D.Float computeCenter(Point2D.Float[] points) {
         float x = 0;
         float y = 0;
