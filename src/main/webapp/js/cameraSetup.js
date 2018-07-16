@@ -103,7 +103,7 @@ function initCameraSetup() {
             cam = new FileCamera(c.name, c.location, c.videoFileName);
         }
         cam.id = c.id;
-        cam.myStreets = extractStreetIds(c.streets);
+        cam.myStreets = c.streets;
         assignCamIdToStreets(cam.id, cam.myStreets);
         cameras.push(cam);
     }
@@ -128,13 +128,5 @@ function initCameraSetup() {
                 }
             }
         }
-    }
-
-    function extractStreetIds(streets) {
-        var r = [];
-        for (var s in streets) {
-            r.push(streets[s].streetId);
-        }
-        return r;
     }
 }
