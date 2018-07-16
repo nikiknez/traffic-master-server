@@ -76,11 +76,14 @@ function initUserControl() {
     });
 
     $("#dodajNalogButton").click(function () {
-        var ime = $("#newNameInput").val();
+        var name = $("#newNameInput").val();
         var username = $("#newUsernameInput").val();
         var password = $("#newPasswordInput").val();
+        var canAddCamera = $("#canAddCamera")[0].checked;
+        var canAddStreet = $("#canAddStreet")[0].checked;
+        var canAddMark = $("#canAddMark")[0].checked;
 
-        if (ime === "") {
+        if (name === "") {
             $("#dodajNalogDialogError").html("<br>Niste uneli ime");
             return false;
         }
@@ -94,7 +97,8 @@ function initUserControl() {
             return false;
         }
 
-        var p = {name: ime, username: username, password: password};
+        var p = {name: name, username: username, password: password,
+            canAddCamera: canAddCamera, canAddStreet: canAddStreet, canAddMark: canAddMark};
 
         $.post("AddAccountServlet", $.param({user: JSON.stringify(p)}), function (responseText) {
             if (responseText === "ok") {

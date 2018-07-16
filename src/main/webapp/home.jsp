@@ -131,6 +131,17 @@
                         <input type="text" class="form-control" id="newUsernameInput">
                         <label for="newPasswordInput">Lozinka:</label>
                         <input type="password" class="form-control" id="newPasswordInput">
+
+                        <div class="checkbox">
+                            <label><input type="checkbox" id="canAddCamera">Moze da doda kameru</label>
+                        </div>
+                        <div class="checkbox">
+                            <label><input type="checkbox" id="canAddMark">Moze da doda oznaku</label>
+                        </div>
+                        <div class="checkbox">
+                            <label><input type="checkbox" id="canAddStreet">Moze da oznaci ulicu</label>
+                        </div> 
+
                         <strong style="color: red" id="dodajNalogDialogError">
                         </strong>
                     </div>
@@ -294,7 +305,7 @@
         <script
             src="https://maps.googleapis.com/maps/api/js?language=sr&key=AIzaSyCT5XMY1YeBcvRNHpje04pmrgQ0WeKzCso">
         </script>
-        
+
         <script>
             var config = ${config};
         </script>
