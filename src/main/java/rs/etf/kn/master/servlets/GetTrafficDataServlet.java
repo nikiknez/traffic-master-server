@@ -22,7 +22,7 @@ public class GetTrafficDataServlet extends HttpServlet {
         response.setContentType("application/json");
 
         String trafficData = StreetDataManager.toJSON();
-
+        
         response.getWriter().write(trafficData);
     }
 

@@ -14,6 +14,11 @@ public class StreetDataSource {
         data = new HashMap<>();
     }
 
+    public StreetDataSource(String id, Map<String, StreetData> data) {
+        this.id = id;
+        this.data = data;
+    }
+    
     public void addData(String streetId, StreetData d) {
         data.put(streetId, d);
     }
