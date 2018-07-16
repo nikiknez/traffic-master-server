@@ -21,7 +21,7 @@ import rs.etf.kn.master.main.Main;
 import rs.etf.kn.master.model.Location;
 
 public class UploadMobileDataServlet extends HttpServlet {
-
+    
     private static final Logger LOG = Logger.getLogger(UploadMobileDataServlet.class.getName());
 
     /**
@@ -34,19 +34,19 @@ public class UploadMobileDataServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("application/json");
-
+        response.setContentType("text/plain;charset=UTF-8");
+        
         try {
             String dataParam = request.getParameter("data");
             LOG.log(Level.INFO, "Got data: {0}", dataParam);
             final double[][] data = new Gson().fromJson(dataParam, double[][].class);
-
+            
             int i = 0;
             com.google.maps.model.LatLng[] queryPoints = new com.google.maps.model.LatLng[data.length];
             for (double[] p : data) {
                 queryPoints[i++] = new com.google.maps.model.LatLng(p[0], p[1]);
             }
-
+            
             RoadsApi.snapToRoads(Main.geoApiContext, true, queryPoints).setCallback(new PendingResult.Callback<SnappedPoint[]>() {
                 @Override
                 public void onResult(SnappedPoint[] t) {
@@ -54,21 +54,22 @@ public class UploadMobileDataServlet extends HttpServlet {
                     StreetDataSource mobileSource = StreetDataManager.getDataSource("mobile");
                     List<Location> path = new LinkedList<>();
                     int origIdx = 0;
-                    String lastStreetId = t[0].placeId;
                     double speed = 0;
+                    String lastStreetId = t[0].placeId;
+                    SnappedPoint lastSnappedPoint = t[t.length - 1];
                     for (SnappedPoint sp : t) {
                         if (sp.originalIndex != -1) {
                             origIdx = sp.originalIndex;
                         }
                         Location l = new Location(sp.location.lat, sp.location.lng);
-
+                        
                         if (!sp.placeId.equals(lastStreetId)) {
                             speed /= path.size();
                             MobileStreetData msdata = new MobileStreetData(path, (int) speed);
                             if (mobileSource.getData(lastStreetId) != null) {
                                 MobileStreetData oldData = (MobileStreetData) mobileSource.getData(lastStreetId);
                                 Location lastPoint = oldData.getPath().get(oldData.getPath().size() - 1);
-                                if (lastPoint.equals(l)) {
+                                if (lastPoint.equals(path.get(0))) {
                                     oldData.getPath().addAll(path);
                                     oldData.setIntensity((int) speed);
                                     msdata = oldData;
@@ -81,20 +82,20 @@ public class UploadMobileDataServlet extends HttpServlet {
                         lastStreetId = sp.placeId;
                         speed += data[origIdx][2];
                         path.add(l);
-                        if (sp == t[t.length - 1]) {
+                        if (sp == lastSnappedPoint) {
                             speed /= path.size();
                             MobileStreetData msdata = new MobileStreetData(path, (int) speed);
                             mobileSource.addData(lastStreetId, msdata);
                         }
                     }
                 }
-
+                
                 @Override
                 public void onFailure(Throwable thrwbl) {
                     LOG.severe("Got error in response");
                 }
             });
-
+            
             response.getWriter().write("ok");
         } catch (JsonSyntaxException e) {
             LOG.severe(e.toString());
