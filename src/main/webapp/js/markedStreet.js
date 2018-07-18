@@ -100,23 +100,7 @@ $("#saveStreetInfoButton").click(function () {
         makeDashedPolyLine(selectedStreet.polyLine);
         selectedStreet = null;
     } else {
-        var p = {info: text, from: from, to: to};
-        p.location = JSON.stringify(lastClickLocation);
-        $.post("AddMarkServlet", $.param(p));
-
-        var marker = new google.maps.Marker({
-            position: lastClickLocation,
-            map: map,
-            icon: 'icons/warning.png',
-            title: text
-        });
-        var iw = new google.maps.InfoWindow();
-        iw.setOptions({maxWidth: 300});
-
-        marker.addListener('click', function (e) {
-            iw.setContent(text);
-            iw.open(map, marker);
-        });
+        new MarkedPoint(text, from, to);
     }
 });
 
@@ -142,22 +126,7 @@ function openStreetContextMenu(event) {
     var cMenu = $("#streetContextMenu");
     cMenu.removeClass("hidden");
 
-    var cMenuW = cMenu.width();
-    var cMenuH = cMenu.height();
-    var bodyW = $(document.body).width();
-    var bodyH = $(document.body).height();
-
-    if (event.x + cMenuW < bodyW) {
-        cMenu.css("left", event.x);
-    } else {
-        cMenu.css("left", bodyW - cMenuW);
-    }
-
-    if (event.y + cMenuH < bodyH) {
-        cMenu.css("top", event.y);
-    } else {
-        cMenu.css("top", bodyH - cMenuH);
-    }
+    moveElementTo(cMenu, event.x, event.y);
 }
 
 function enterCamSelectMode() {

@@ -238,6 +238,11 @@
         <div id="streetContextMenu" class="btn-group-vertical hidden contextMenu">
             <button id="bindToCamButton" class="btn btn-default hidden">Pridruzi kameri</button>
             <button id="streetInfoButton" class="btn btn-default hidden">Unesi informacije</button>
+        </div
+        
+        <!--Mark Point Context Menu-->
+        <div id="markPointContextMenu" class="btn-group-vertical hidden contextMenu">
+            <button id="removeMarkPointButton" class="btn btn-default">Obrisi oznaku</button>
         </div>
 
         <!--Street drawing mod-->
@@ -317,6 +322,7 @@
         <script src="js/camConfig.js"></script>
         <script src="js/cameraSetup.js"></script>
         <script src="js/markedStreet.js"></script>
+        <script src="js/markedPoint.js"></script>
         <script src="js/streetDraw.js"></script>
         <script src="js/centerControl.js"></script>
         <script src="js/userControl.js"></script>

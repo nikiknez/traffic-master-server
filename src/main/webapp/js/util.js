@@ -16,6 +16,24 @@ function setToCenter(element, dim) {
     }
 }
 
+function moveElementTo(element, x, y) {
+    var eW = element.width();
+    var eH = element.height();
+    var bodyW = $(document.body).width();
+    var bodyH = $(document.body).height();
+    
+    if (x + eW < bodyW) {
+        element.css("left", x);
+    } else {
+        element.css("left", bodyW - eW);
+    }
+    if (y + eH < bodyH) {
+        element.css("top", y);
+    } else {
+        element.css("top", bodyH - eH);
+    }
+}
+
 function intensityToColorMap(intensity) {
     if (intensity > 10) {
         return 'green';

@@ -47,7 +47,7 @@ html, body {
     top: 40%;
 }
 
-#contextMenu, #streetContextMenu {
+#contextMenu, #streetContextMenu, #markPointContextMenu {
     position: absolute;
     top: 0;
     left: 0;
