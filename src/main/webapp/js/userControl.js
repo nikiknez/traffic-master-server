@@ -124,7 +124,7 @@ function initUserControl() {
         if (shouldHide) {
             $("#justMyChangesButton").text("Prikazi sve podatke");
         } else {
-            $("#justMyChangesButton").text("Prikazi samo moje podatke");
+            $("#justMyChangesButton").text("Samo moji podaci");
         }
         $("#justMyChangesButton")[0].shouldHide = shouldHide;
     });

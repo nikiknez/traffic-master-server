@@ -204,7 +204,7 @@
 
         <!--Login control-->
         <div id="userControlDiv">
-            <button id="justMyChangesButton" class="btn btn-default hidden">Prikazi samo moje podatke</button>
+            <button id="justMyChangesButton" class="btn btn-default hidden">Samo moji podaci</button>
             <button id="addAccountButton" class="btn btn-default hidden" data-toggle="modal" 
                     data-target="#dodajNalogModal">Dodaj nalog</button>
             <button id="showLoginButton" class="btn btn-default" data-toggle="modal" 
@@ -229,9 +229,9 @@
         <div id="contextMenu" class="btn-group-vertical hidden contextMenu">
             <button id="addCameraContextButton" class="btn btn-default hidden"
                     data-toggle="modal" data-target="#addCameraModal">Dodaj kameru ovde</button>
-            <button id="markStreetContextButton" class="btn btn-default hidden">Oznaci ulicu</button>
+            <button id="markStreetContextButton" class="btn btn-default hidden">Dodaj ulicu</button>
             <button id="addMarkContextButton" class="btn btn-default hidden"
-                    data-toggle="modal" data-target="#streetInfoModal">Dodaj oznaku</button>
+                    data-toggle="modal" data-target="#streetInfoModal">Dodaj oznaku ovde</button>
         </div>
 
         <!--Street Context Menu-->
