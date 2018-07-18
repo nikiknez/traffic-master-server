@@ -13,6 +13,10 @@ function MarkedStreet(polyLine, options) {
         self.ValidTo = options.ValidTo;
     }
 
+    if (self.infoText) {
+        makeDashedPolyLine(polyLine);
+    }
+
     polyLine.addListener('rightclick', function (e) {
         if (!camSelectMode && !drawingMode && !streetSelectMode && !self.camId) {
             selectedStreet = self;
@@ -45,14 +49,22 @@ function MarkedStreet(polyLine, options) {
     };
 }
 
-function intensityToColorMap(intensity) {
-    if (intensity > 10) {
-        return 'green';
-    }
-    if (intensity > 5) {
-        return 'yellow';
-    }
-    return 'red';
+function makeDashedPolyLine(polyLine) {
+    polyLine.setOptions(
+            {
+                strokeOpacity: 0,
+                strokeColor: 'red',
+                icons: [
+                    {
+                        icon: {path: 'M 0,-1 0,1',
+                            strokeOpacity: 1,
+                            scale: 4},
+                        offset: '0',
+                        repeat: '20px'
+                    }
+                ]
+            }
+    );
 }
 
 $("#bindToCamButton").click(function () {
@@ -81,22 +93,40 @@ $("#saveStreetInfoButton").click(function () {
     var from = $("#streetInfoValidFrom").val();
     var to = $("#streetInfoValidTo").val();
 
-    var p = {id: selectedStreet.id, info: text, from: from, to: to};
-    $.post("AddStreetInfoServlet", $.param(p), function (responseText) {
-        if (responseText === "ok") {
+    if (selectedStreet) {
+        var p = {id: selectedStreet.id, info: text, from: from, to: to};
+        $.post("AddStreetInfoServlet", $.param(p));
+        selectedStreet.infoText = text;
+        makeDashedPolyLine(selectedStreet.polyLine);
+        selectedStreet = null;
+    } else {
+        var p = {info: text, from: from, to: to};
+        p.location = JSON.stringify(lastClickLocation);
+        $.post("AddMarkServlet", $.param(p));
 
-        }
-        console.log(responseText);
-    });
+        var marker = new google.maps.Marker({
+            position: lastClickLocation,
+            map: map,
+            icon: 'icons/warning.png',
+            title: text
+        });
+        var iw = new google.maps.InfoWindow();
+        iw.setOptions({maxWidth: 300});
 
-    selectedStreet.infoText = text;
-    selectedStreet = null;
+        marker.addListener('click', function (e) {
+            iw.setContent(text);
+            iw.open(map, marker);
+        });
+    }
 });
 
 function openStreetContextMenu(event) {
     $(".contextMenu").addClass("hidden");
     $("#bindToCamButton").addClass("hidden");
-    if (!selectedStreet.camId && selectedStreet.owner === currentUser.username && currentUser.canAddCamera) {
+    if (!currentUser) {
+        return;
+    }
+    if (!selectedStreet.camId && !selectedStreet.infoText && selectedStreet.owner === currentUser.username && currentUser.canAddCamera) {
         $("#bindToCamButton").removeClass("hidden");
     }
     $("#streetInfoButton").addClass("hidden");

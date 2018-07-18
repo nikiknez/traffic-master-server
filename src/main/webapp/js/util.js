@@ -16,3 +16,12 @@ function setToCenter(element, dim) {
     }
 }
 
+function intensityToColorMap(intensity) {
+    if (intensity > 10) {
+        return 'green';
+    }
+    if (intensity > 5) {
+        return 'yellow';
+    }
+    return 'red';
+}

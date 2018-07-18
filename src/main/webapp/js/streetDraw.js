@@ -9,17 +9,6 @@ function initStreetDrawing() {
             path: s.path,
             map: map
         };
-        if (s.infoText) {
-            po.strokeOpacity = 0;
-            po.strokeColor = 'orange';
-            po.icons = [{
-                    icon: {path: 'M 0,-1 0,1',
-                        strokeOpacity: 1,
-                        scale: 4},
-                    offset: '0',
-                    repeat: '20px'
-                }];
-        }
         var gpoly = new google.maps.Polyline(po);
         var street = new MarkedStreet(gpoly, s);
         streets[street.id] = street;

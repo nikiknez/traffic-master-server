@@ -56,6 +56,18 @@
         <servlet-name>GetTrafficDataServlet</servlet-name>
         <servlet-class>rs.etf.kn.master.servlets.GetTrafficDataServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>UploadMobileDataServlet</servlet-name>
+        <servlet-class>rs.etf.kn.master.servlets.UploadMobileDataServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>GetConfigurationServlet</servlet-name>
+        <servlet-class>rs.etf.kn.master.servlets.GetConfigurationServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AddMarkServlet</servlet-name>
+        <servlet-class>rs.etf.kn.master.servlets.AddMarkServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>StartServlet</servlet-name>
         <url-pattern>/StartServlet</url-pattern>
@@ -107,6 +119,18 @@
     <servlet-mapping>
         <servlet-name>GetTrafficDataServlet</servlet-name>
         <url-pattern>/GetTrafficDataServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UploadMobileDataServlet</servlet-name>
+        <url-pattern>/UploadMobileDataServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetConfigurationServlet</servlet-name>
+        <url-pattern>/GetConfigurationServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AddMarkServlet</servlet-name>
+        <url-pattern>/AddMarkServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

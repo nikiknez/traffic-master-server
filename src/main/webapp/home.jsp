@@ -159,7 +159,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 class="modal-title">Informacije o ulici</h4>
+                        <h4 class="modal-title">Informacije</h4>
                     </div>
                     <div class="modal-body">
                         <label for="streetInfoText">Obavestenje:</label>
@@ -230,6 +230,8 @@
             <button id="addCameraContextButton" class="btn btn-default hidden"
                     data-toggle="modal" data-target="#addCameraModal">Dodaj kameru ovde</button>
             <button id="markStreetContextButton" class="btn btn-default hidden">Oznaci ulicu</button>
+            <button id="addMarkContextButton" class="btn btn-default hidden"
+                    data-toggle="modal" data-target="#streetInfoModal">Dodaj oznaku</button>
         </div>
 
         <!--Street Context Menu-->

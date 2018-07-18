@@ -15,7 +15,7 @@ function initUserControl() {
             $("#markStreetContextButton").removeClass("hidden");
         }
         if (currentUser.canAddMark) {
-
+            $("#addMarkContextButton").removeClass("hidden");
         }
     }
 
@@ -24,6 +24,7 @@ function initUserControl() {
         $("#saveViewButton").addClass("hidden");
         $("#addCameraContextButton").addClass("hidden");
         $("#markStreetContextButton").addClass("hidden");
+        $("#addMarkContextButton").addClass("hidden");
         $("#justMyChangesButton").addClass("hidden");
 
         cameras.forEach(function (c) {
