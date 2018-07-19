@@ -66,13 +66,19 @@ $(document).ready(function () {
     initCameraSetup();
 
     initTrafficDataFetching();
+
+    for (var i in config.marks) {
+        var m = config.marks[i];
+        console.log(m);
+        new MarkedPoint(m.owner, m.location, m.info, m.validFrom, m.validTo, m.id);
+    }
 });
 
 var mobileStreetPaths = [];
 var showMobileData = true;
 function displayMobileData(visible) {
     showMobileData = visible;
-    for(var p in mobileStreetPaths){
+    for (var p in mobileStreetPaths) {
         mobileStreetPaths[p].setVisible(visible);
     }
 }

@@ -22,8 +22,10 @@ public class Configuration {
 
     private List<Camera> cameras = new ArrayList<>();
     private List<Street> streets = new ArrayList<>();
+    private List<Mark> marks = new ArrayList<>();
     private List<MapView> mapViews = new ArrayList<>();
     private List<User> users = new ArrayList<>();
+
     private int lastId = 0;
 
     public static final String BASE_DIR = "/var/master/";
@@ -88,6 +90,14 @@ public class Configuration {
         this.streets = streets;
     }
 
+    public List<Mark> getMarks() {
+        return marks;
+    }
+
+    public void setMarks(List<Mark> marks) {
+        this.marks = marks;
+    }
+
     public List<MapView> getMapViews() {
         return mapViews;
     }
@@ -131,6 +141,19 @@ public class Configuration {
 
     public void addStreet(Street s) {
         streets.add(s);
+    }
+
+    public void addMark(Mark s) {
+        marks.add(s);
+    }
+
+    public void removeMark(String id) {
+        for (Mark m : marks) {
+            if (m.getId().equals(id)) {
+                marks.remove(m);
+                break;
+            }
+        }
     }
 
     public void addCamera(Camera c) {

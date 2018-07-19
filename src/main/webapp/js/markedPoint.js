@@ -1,31 +1,35 @@
 var marks = [];
-
-function MarkedPoint(text, validFrom, validTo) {
+var selectedMark = null;
+function MarkedPoint(owner, location, text, validFrom, validTo, id) {
     var self = this;
-    this.infoText = text;
+    this.info = text;
     this.validFrom = validFrom;
     this.validTo = validTo;
-    this.location = lastClickLocation;
-    this.owner = currentUser.username;
+    this.location = location;
+    this.owner = owner;
+    this.id = id;
 
-    var p = {info: text, from: validFrom, to: validTo};
-    p.location = JSON.stringify(lastClickLocation);
-    $.post("AddMarkServlet", $.param(p), function (response) {
-        self.id = response;
-        marks.push(this);
-    });
+    if (lastClickLocation) {
+        // new mark, not loaded at startup
+        var m = {info: text, validFrom: validFrom, validTo: validTo, owner: this.owner};
+        m.location = location;
+        $.post("AddRemoveMarkServlet", $.param({add: 1, data: JSON.stringify(m)}), function (id) {
+            self.id = id;
+            marks[id] = self;
+        });
+    }
 
     var marker = new google.maps.Marker({
-        position: lastClickLocation,
+        position: location,
         map: map,
         icon: 'icons/warning.png',
         title: text
     });
     var iw = new google.maps.InfoWindow();
     iw.setOptions({maxWidth: 300});
+    iw.setContent(text);
 
     marker.addListener('click', function (e) {
-        iw.setContent(text);
         iw.open(map, marker);
     });
 
@@ -39,9 +43,24 @@ function MarkedPoint(text, validFrom, validTo) {
         if (!currentUser || currentUser.username !== self.owner) {
             return;
         }
+        selectedMark = self;
         var cMenu = $("#markPointContextMenu");
         console.log(event.Ha);
         cMenu.removeClass("hidden");
         moveElementTo(cMenu, event.Ha.x, event.Ha.y);
     }
+
+    self.remove = function () {
+        marker.setMap(null);
+        iw.close();
+        marks[self.id] = undefined;
+        $.post("AddRemoveMarkServlet", {id: self.id});
+    };
 }
+
+$("#removeMarkPointButton").click(function () {
+    if (selectedMark) {
+        selectedMark.remove();
+        selectedMark = null;
+    }
+});

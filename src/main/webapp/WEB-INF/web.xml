@@ -65,8 +65,8 @@
         <servlet-class>rs.etf.kn.master.servlets.GetConfigurationServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>AddMarkServlet</servlet-name>
-        <servlet-class>rs.etf.kn.master.servlets.AddMarkServlet</servlet-class>
+        <servlet-name>AddRemoveMarkServlet</servlet-name>
+        <servlet-class>rs.etf.kn.master.servlets.AddRemoveMarkServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>StartServlet</servlet-name>
@@ -129,8 +129,8 @@
         <url-pattern>/GetConfigurationServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>AddMarkServlet</servlet-name>
-        <url-pattern>/AddMarkServlet</url-pattern>
+        <servlet-name>AddRemoveMarkServlet</servlet-name>
+        <url-pattern>/AddRemoveMarkServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

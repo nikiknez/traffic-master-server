@@ -5,17 +5,21 @@
  */
 package rs.etf.kn.master.servlets;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import rs.etf.kn.master.model.Configuration;
+import rs.etf.kn.master.model.Mark;
 
 /**
  *
  * @author NikLik
  */
-public class AddMarkServlet extends HttpServlet {
+public class AddRemoveMarkServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -28,8 +32,23 @@ public class AddMarkServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        
-        System.out.println("AddMarkServlet");
+        boolean shouldAdd = request.getParameter("add") != null;
+        try {
+            if (shouldAdd) {
+                String data = request.getParameter("data");
+                Mark m = new Gson().fromJson(data, Mark.class);
+                String id = "" + Configuration.get().getNextId();
+                m.setId(id);
+                Configuration.get().addMark(m);
+                response.getWriter().write(id);
+            } else {
+                String id = request.getParameter("id");
+                Configuration.get().removeMark(id);
+            }
+        } catch (JsonSyntaxException e) {
+            response.getWriter().write("!");
+
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

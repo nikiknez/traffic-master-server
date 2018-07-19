@@ -26,6 +26,7 @@ function MarkedStreet(polyLine, options) {
 
     var iw = new google.maps.InfoWindow();
     iw.setOptions({maxWidth: 300});
+    iw.setContent(self.infoText);
 
     google.maps.event.addListener(self.polyLine, 'click', function (e) {
         if (streetSelectMode) {
@@ -36,7 +37,6 @@ function MarkedStreet(polyLine, options) {
             }
         }
         if (self.infoText) {
-            iw.setContent(self.infoText);
             iw.setPosition(e.latLng);
             iw.open(map);
         }
@@ -100,7 +100,7 @@ $("#saveStreetInfoButton").click(function () {
         makeDashedPolyLine(selectedStreet.polyLine);
         selectedStreet = null;
     } else {
-        new MarkedPoint(text, from, to);
+        new MarkedPoint(currentUser.username, lastClickLocation, text, from, to);
     }
 });
 
