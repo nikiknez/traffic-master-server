@@ -9,16 +9,16 @@ function MarkedPoint(owner, location, text, validFrom, validTo, id) {
     this.owner = owner;
     this.id = id;
 
-    if (lastClickLocation) {
-        // new mark, not loaded at startup
-        var m = {info: text, validFrom: validFrom, validTo: validTo, owner: this.owner};
-        m.location = location;
-        $.post("AddRemoveMarkServlet", $.param({add: 1, data: JSON.stringify(m)}), function (id) {
+    if (id) {
+        marks[id] = self;
+    }else {
+        // new mark just created
+        var d = {info: text, validFrom: validFrom, validTo: validTo,
+            owner: this.owner, location: location};
+        $.post("AddRemoveMarkServlet", $.param({add: 1, data: JSON.stringify(d)}), function (id) {
             self.id = id;
             marks[id] = self;
         });
-    } else {
-        marks[id] = self;
     }
 
     var marker = new google.maps.Marker({
