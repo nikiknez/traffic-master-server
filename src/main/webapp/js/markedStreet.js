@@ -45,7 +45,6 @@ function MarkedStreet(polyLine, options) {
     });
 
     self.setStreetData = function (data) {
-        console.log("street " + self.id + " got data: " + data);
         self.data = data;
         self.polyLine.setOptions({strokeColor: intensityToColorMap(data.intensity)});
     };

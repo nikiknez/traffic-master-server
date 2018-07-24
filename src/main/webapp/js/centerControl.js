@@ -1,4 +1,3 @@
-
 var centers = [
     {
         lat: 44.808,
@@ -17,20 +16,24 @@ function centerMap(i) {
     }
 }
 
-function initCenterControl() {
-    if (typeof (Storage) !== "undefined" && localStorage.centers) {
-        centers = JSON.parse(localStorage.centers);
-    }
-    
+function updateCentersFromConfig() {
     centers = config.mapViews;
-
     var i;
     var cList = $("#centersList");
+    cList.html("");
     for (i = 0; i < centers.length; i++) {
         var n = centers[i].name;
         var txt = '<li><a href="#" onclick="centerMap(' + i + ')">' + n + '</a></li>';
         cList.append(txt);
     }
+}
+
+function initCenterControl() {
+    if (typeof (Storage) !== "undefined" && localStorage.centers) {
+        centers = JSON.parse(localStorage.centers);
+    }
+    
+    updateCentersFromConfig();
 
     $("#sacuvajPogledButton").click(function () {
         var name = $("#nazivPogledaInput").val();

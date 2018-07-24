@@ -65,11 +65,12 @@ $(document).ready(function () {
 
     initCameraSetup();
 
-    initTrafficDataFetching();
+    setupTrafficDataFetching();
+    
+    setupConfigFetching();
 
     for (var i in config.marks) {
         var m = config.marks[i];
-        console.log(m);
         new MarkedPoint(m.owner, m.location, m.info, m.validFrom, m.validTo, m.id);
     }
 });
@@ -97,14 +98,14 @@ function updateMobileStreetData(streetId, streetData) {
         mobileStreetPaths[streetId] = new google.maps.Polyline(po);
     }
 }
-function initTrafficDataFetching() {
+function setupTrafficDataFetching() {
     function getTraficData() {
         $.get("GetTrafficDataServlet", function (data) {
             for (var source in data) {
                 var streetsData = data[source].data;
                 for (var streetId in streetsData) {
                     var streetData = streetsData[streetId];
-                    console.log(streetId + ": " + streetData.intensity);
+//                    console.log(streetId + ": " + streetData.intensity);
                     var s = streets[streetId];
                     if (s) {
                         s.setStreetData(streetData);
@@ -119,6 +120,20 @@ function initTrafficDataFetching() {
         });
     }
     setTimeout(getTraficData, 3000);
+}
+
+function setupConfigFetching() {
+    function getConfig() {
+        $.get("GetConfigurationServlet", function (newConfig) {
+            console.log(newConfig);
+            config = newConfig;
+            updateCentersFromConfig();
+        }).always(function () {
+            setTimeout(getConfig, 20000);
+        });
+    }
+    
+    setTimeout(getConfig, 20000);
 }
 
 function mapRightClickCallback(event) {
