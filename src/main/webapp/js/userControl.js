@@ -120,6 +120,13 @@ function initUserControl() {
                 s.polyLine.setVisible(true);
             }
         }
+        for (var i in marks) {
+            if (shouldHide) {
+                marks[i].hideIfNotMine();
+            } else {
+                marks[i].show();
+            }
+        }
         displayMobileData(!shouldHide);
         if (shouldHide) {
             $("#justMyChangesButton").text("Prikazi sve podatke");

@@ -17,6 +17,8 @@ function MarkedPoint(owner, location, text, validFrom, validTo, id) {
             self.id = id;
             marks[id] = self;
         });
+    } else {
+        marks[id] = self;
     }
 
     var marker = new google.maps.Marker({
@@ -55,6 +57,15 @@ function MarkedPoint(owner, location, text, validFrom, validTo, id) {
         iw.close();
         marks[self.id] = undefined;
         $.post("AddRemoveMarkServlet", {id: self.id});
+    };
+
+    self.hideIfNotMine = function () {
+        marker.setVisible(self.owner === currentUser.username);
+        iw.close();
+    };
+
+    self.show = function () {
+        marker.setVisible(true);
     };
 }
 

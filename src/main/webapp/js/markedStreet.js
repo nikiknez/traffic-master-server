@@ -37,7 +37,9 @@ function MarkedStreet(polyLine, options) {
             }
         }
         if (self.infoText) {
+            iw.close();
             iw.setPosition(e.latLng);
+            iw.setContent(self.infoText);
             iw.open(map);
         }
     });
