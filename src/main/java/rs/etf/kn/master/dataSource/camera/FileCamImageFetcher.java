@@ -23,10 +23,15 @@ public class FileCamImageFetcher extends CamImageFetcher {
 
     @Override
     protected CamImage fetchImage() throws IOException, InterruptedException {
-        Thread.sleep(100);
+        Thread.sleep(250);
         boolean success = fileSource.read(currentFrame);
         if (!success) {
-            throw new IOException("End of video file");
+            if (fileSource.get(0) > 0) {
+                fileSource.set(0, 0);
+                fileSource.read(currentFrame);
+            } else {
+                throw new IOException("End of video file");
+            }
         }
         long ts = (long) fileSource.get(0);
         Mat matImgGray = OpenCV.createGray(currentFrame);

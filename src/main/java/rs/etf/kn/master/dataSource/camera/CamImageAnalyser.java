@@ -1,10 +1,13 @@
 package rs.etf.kn.master.dataSource.camera;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.opencv.core.Core;
+import javax.imageio.ImageIO;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
@@ -12,7 +15,6 @@ import org.opencv.core.MatOfFloat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
-import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.video.Video;
 import rs.etf.kn.master.dataSource.StreetData;
@@ -46,7 +48,7 @@ public class CamImageAnalyser extends Thread implements CamImageFetcher.CamImage
         reperImageFeaturePoints = new MatOfPoint2f();
         MatOfPoint corners = new MatOfPoint();
         double minDistance = Math.sqrt(img.width() * img.height() / 2000);
-        Imgproc.goodFeaturesToTrack(img, corners, 1000, 0.01, minDistance);
+        Imgproc.goodFeaturesToTrack(img, corners, 1000, 0.05, minDistance);
         corners.convertTo(reperImageFeaturePoints, CvType.CV_32F);
     }
 
@@ -72,7 +74,7 @@ public class CamImageAnalyser extends Thread implements CamImageFetcher.CamImage
                 nextFrame = getNextValidImage();
                 nextFrameROI = PerspectiveTransformator.fourPointTransform(nextFrame.matImgGray, camStreetConfig.getPolyPoints());
                 long timeDiff = nextFrame.timeStamp - lastFrame.timeStamp;
-                if (timeDiff > 1000) {
+                if (timeDiff > 1000 || timeDiff <= 0) {
                     lastFrame = nextFrame;
                     lastFrameROI = nextFrameROI;
                     LOG.severe("Time between frames > 1000 ms");
@@ -88,7 +90,7 @@ public class CamImageAnalyser extends Thread implements CamImageFetcher.CamImage
                 lastFrameROI = nextFrameROI;
             }
         } catch (InterruptedException ex) {
-            LOG.warning("stoped analyzing street " + camStreetConfig.getStreetId());
+            LOG.log(Level.WARNING, "stoped analyzing street {0}", camStreetConfig.getStreetId());
         }
     }
 
@@ -96,18 +98,22 @@ public class CamImageAnalyser extends Thread implements CamImageFetcher.CamImage
         int totalVectors = vectors.size();
         int totalMotions = 0;
         double totalDistance = 0;
+        int maxIntensity = 0;
         for (MotionVector motion : vectors) {
             double distance = motion.distance(camStreetConfig.getMetersPerPixelRatio());
             if (distance > 0.5) {
                 totalMotions++;
                 totalDistance += distance;
+                double intensity = distance * 1000 / timeDiff;
+                if (intensity > maxIntensity) {
+                    maxIntensity = (int) intensity;
+                }
             }
         }
         double avgDistance = totalDistance / totalMotions;
-
-        double intensity = avgDistance / timeDiff;
-
-        forwardResult((int) intensity);
+        double intensity = avgDistance * 1000 / timeDiff;
+        LOG.log(Level.INFO, "intensity = {0}", intensity);
+        forwardResult((int) maxIntensity);
     }
 
     private void forwardResult(int intensity) {
@@ -142,7 +148,17 @@ public class CamImageAnalyser extends Thread implements CamImageFetcher.CamImage
         while (reperImageSimilarity(img.matImgGray) < 0.5) {
             img = getNextImage();
         }
+        dumpMatchedImage(img);
         return img;
+    }
+    
+    private void dumpMatchedImage(CamImage img){
+        try {
+            String name = "/var/master/temp/" + camStreetConfig.getStreetId() + "-" + img.timeStamp + ".jpg";
+            BufferedImage image = OpenCV.matToBufferedImage(img.matImg);
+            ImageIO.write(image, "jpg", new File(name));
+        } catch (IOException ex) {
+        }
     }
 
     private double reperImageSimilarity(Mat img) {
@@ -175,7 +191,7 @@ public class CamImageAnalyser extends Thread implements CamImageFetcher.CamImage
         if (valid == 0) {
             return 0;
         }
-        double sim = valid / total > 0.3 ? fix / valid : 0;
+        double sim = valid / total > 0.2 ? fix / valid : 0;
         LOG.info("total = " + total + "   valid = " + valid + "   fix = " + fix + "   similarity = " + sim);
         return sim;
     }
