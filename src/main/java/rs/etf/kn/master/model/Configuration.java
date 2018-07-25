@@ -26,7 +26,7 @@ public class Configuration {
     private List<MapView> mapViews = new ArrayList<>();
     private List<User> users = new ArrayList<>();
 
-    private int lastId = 0;
+    private int lastId = 1;
 
     public static final String BASE_DIR = "/var/master/";
     public static final String VIDEOS_DIR = BASE_DIR + "videos/";
