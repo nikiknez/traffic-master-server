@@ -129,6 +129,7 @@ function setupConfigFetching() {
             config = newConfig;
             updateCentersFromConfig();
             updateStreetsFromConfig();
+            updateCamerasFromConfig();
         }).always(function () {
             setTimeout(getConfig, 20000);
         });

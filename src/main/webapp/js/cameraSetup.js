@@ -1,6 +1,42 @@
 var cameras = [];
 
+function updateCamerasFromConfig() {
+    var cams = [];
+    for (var i in cameras) {
+        cams[cameras[i].id] = cameras[i];
+    }
+    for (var i in config.cameras) {
+        var c = config.cameras[i];
+
+        var cam;
+        if (!cams[c.id]) {
+            if (c.type === "ip") {
+                cam = new IpCamera(c.name, c.location, c.ipAddress);
+            } else {
+                cam = new FileCamera(c.name, c.location, c.videoFileName);
+            }
+            cam.id = c.id;
+            cameras.push(cam);
+        } else {
+            cam = cams[c.id];
+        }
+        if (c.streets.length > cam.myStreets.length) {
+            cam.myStreets = c.streets;
+        }
+        assignCamIdToStreets(cam.id, cam.myStreets);
+    }
+}
+function assignCamIdToStreets(camId, streetIds) {
+    for (var i in streetIds) {
+        var sId = streetIds[i];
+        if (streets[sId]) {
+            streets[sId].camId = camId;
+        }
+    }
+}
+
 function initCameraSetup() {
+    updateCamerasFromConfig();
     function tipSelect() {
         var tip = $("input[name=videoTip]:checked").val();
         if (tip === "ip") {
@@ -53,7 +89,6 @@ function initCameraSetup() {
         }
     });
 
-
     $("#sacuvajKameruButton").click(function () {
         var name = $("#nazivKamereInput").val();
         var ipAddress = $("#ipCamInput").val();
@@ -93,21 +128,6 @@ function initCameraSetup() {
         });
     });
 
-    for (var i in config.cameras) {
-        var c = config.cameras[i];
-
-        var cam;
-        if (c.type === "ip") {
-            cam = new IpCamera(c.name, c.location, c.ipAddress);
-        } else {
-            cam = new FileCamera(c.name, c.location, c.videoFileName);
-        }
-        cam.id = c.id;
-        cam.myStreets = c.streets;
-        assignCamIdToStreets(cam.id, cam.myStreets);
-        cameras.push(cam);
-    }
-
     $("#cancleStreetSelectButton").click(function () {
         exitStreetSelectMode();
     });
@@ -118,15 +138,4 @@ function initCameraSetup() {
         $("#uploadFileButton").addClass("hidden");
         file = null;
     });
-    
-    function assignCamIdToStreets(camId, streetIds) {
-        for (var s in streets) {
-            for (var si in streetIds) {
-                if (streets[s].id === streetIds[si]) {
-                    streets[s].camId = camId;
-                    break;
-                }
-            }
-        }
-    }
 }
