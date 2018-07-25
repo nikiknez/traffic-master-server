@@ -1,19 +1,29 @@
 var newStreetPolyline;
 var drawingMode = false;
 var streets = [];
-function initStreetDrawing() {
 
+function updateStreetsFromConfig() {
     for (var i in config.streets) {
         var s = config.streets[i];
-        var po = {
-            path: s.path,
-            map: map
-        };
-        var gpoly = new google.maps.Polyline(po);
-        var street = new MarkedStreet(gpoly, s);
-        streets[street.id] = street;
+        if (!streets[s.id]) {
+            var po = {
+                path: s.path,
+                map: map
+            };
+            var gpoly = new google.maps.Polyline(po);
+            var street = new MarkedStreet(gpoly, s);
+            streets[street.id] = street;
+        } else {
+            var street = streets[s.id];
+            street.infoText = s.infoText;
+            street.validFrom = s.validFrom;
+            street.ValidTo = s.validTo;
+        }
     }
-
+}
+function initStreetDrawing() {
+    updateStreetsFromConfig();
+    
     $("#markStreetContextButton").click(function () {
         newStreetPolyline = new google.maps.Polyline({
             path: [],

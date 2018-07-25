@@ -128,6 +128,7 @@ function setupConfigFetching() {
             console.log(newConfig);
             config = newConfig;
             updateCentersFromConfig();
+            updateStreetsFromConfig();
         }).always(function () {
             setTimeout(getConfig, 20000);
         });
