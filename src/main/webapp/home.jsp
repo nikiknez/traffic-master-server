@@ -227,9 +227,9 @@
 
         <!--Context Menu-->
         <div id="contextMenu" class="btn-group-vertical hidden contextMenu">
+            <button id="markStreetContextButton" class="btn btn-default hidden">Dodaj ulicu</button>
             <button id="addCameraContextButton" class="btn btn-default hidden"
                     data-toggle="modal" data-target="#addCameraModal">Dodaj kameru ovde</button>
-            <button id="markStreetContextButton" class="btn btn-default hidden">Dodaj ulicu</button>
             <button id="addMarkContextButton" class="btn btn-default hidden"
                     data-toggle="modal" data-target="#streetInfoModal">Dodaj oznaku ovde</button>
         </div>
