@@ -69,10 +69,7 @@ $(document).ready(function () {
     
     setupConfigFetching();
 
-    for (var i in config.marks) {
-        var m = config.marks[i];
-        new MarkedPoint(m.owner, m.location, m.info, m.validFrom, m.validTo, m.id);
-    }
+    updateMarkedPointsFromConfig();
 });
 
 var mobileStreetPaths = [];
@@ -130,6 +127,7 @@ function setupConfigFetching() {
             updateCentersFromConfig();
             updateStreetsFromConfig();
             updateCamerasFromConfig();
+            updateMarkedPointsFromConfig();
         }).always(function () {
             setTimeout(getConfig, 20000);
         });

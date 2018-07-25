@@ -1,5 +1,23 @@
 var marks = [];
 var selectedMark = null;
+
+function updateMarkedPointsFromConfig() {
+    var newMarksMap = [];
+    for (var i in config.marks) {
+        var m = config.marks[i];
+        newMarksMap[m.id] = m.id;
+        if (!marks[m.id]) {
+            new MarkedPoint(m.owner, m.location, m.info, m.validFrom, m.validTo, m.id);
+        }
+    }
+    for (var i in marks) {
+        var m = marks[i];
+        if (!newMarksMap[m.id]) {
+            m.remove();
+        }
+    }
+}
+
 function MarkedPoint(owner, location, text, validFrom, validTo, id) {
     var self = this;
     this.info = text;
@@ -11,8 +29,8 @@ function MarkedPoint(owner, location, text, validFrom, validTo, id) {
 
     if (id) {
         marks[id] = self;
-    }else {
-        // new mark just created
+    } else {
+        // new mark just created, send it to server
         var d = {info: text, validFrom: validFrom, validTo: validTo,
             owner: this.owner, location: location};
         $.post("AddRemoveMarkServlet", $.param({add: 1, data: JSON.stringify(d)}), function (id) {
@@ -54,7 +72,7 @@ function MarkedPoint(owner, location, text, validFrom, validTo, id) {
     self.remove = function () {
         marker.setMap(null);
         iw.close();
-        marks[self.id] = undefined;
+        delete marks[self.id];
         $.post("AddRemoveMarkServlet", {id: self.id});
     };
 
