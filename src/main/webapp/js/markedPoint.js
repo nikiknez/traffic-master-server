@@ -47,9 +47,8 @@ function MarkedPoint(owner, location, text, validFrom, validTo, id) {
         }
         selectedMark = self;
         var cMenu = $("#markPointContextMenu");
-        console.log(event.Ha);
         cMenu.removeClass("hidden");
-        moveElementTo(cMenu, event.Ha.x, event.Ha.y);
+        moveElementTo(cMenu, event.va.x, event.va.y);
     }
 
     self.remove = function () {

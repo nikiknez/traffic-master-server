@@ -20,7 +20,7 @@ function MarkedStreet(polyLine, options) {
     polyLine.addListener('rightclick', function (e) {
         if (!camSelectMode && !drawingMode && !streetSelectMode && !self.camId) {
             selectedStreet = self;
-            openStreetContextMenu(e.Ha);
+            openStreetContextMenu(e.va);
         }
     });
 
