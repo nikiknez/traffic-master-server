@@ -20,6 +20,7 @@ public class GetConfigurationServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("application/json");
+        
         String data = Configuration.get().toJson();
         System.out.println("Got new request for configuration");
         response.getWriter().write(data);

@@ -98,6 +98,7 @@ function updateMobileStreetData(streetId, streetData) {
 function setupTrafficDataFetching() {
     function getTraficData() {
         $.get("GetTrafficDataServlet", function (data) {
+            console.log(data);
             for (var source in data) {
                 var streetsData = data[source].data;
                 for (var streetId in streetsData) {
@@ -113,10 +114,10 @@ function setupTrafficDataFetching() {
                 }
             }
         }).always(function () {
-//            setTimeout(getTraficData, 5000);
+            setTimeout(getTraficData, 20000);
         });
     }
-    setTimeout(getTraficData, 3000);
+    setTimeout(getTraficData, 1000);
 }
 
 function setupConfigFetching() {
