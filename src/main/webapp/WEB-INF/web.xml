@@ -68,6 +68,10 @@
         <servlet-name>AddRemoveMarkServlet</servlet-name>
         <servlet-class>rs.etf.kn.master.servlets.AddRemoveMarkServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>GetVideoFrameServlet</servlet-name>
+        <servlet-class>rs.etf.kn.master.servlets.GetVideoFrameServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>StartServlet</servlet-name>
         <url-pattern>/StartServlet</url-pattern>
@@ -131,6 +135,10 @@
     <servlet-mapping>
         <servlet-name>AddRemoveMarkServlet</servlet-name>
         <url-pattern>/AddRemoveMarkServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetVideoFrameServlet</servlet-name>
+        <url-pattern>/GetVideoFrameServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
