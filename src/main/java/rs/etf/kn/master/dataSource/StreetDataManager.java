@@ -12,13 +12,22 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import rs.etf.kn.master.dataSource.mobile.MobileStreetData;
+import rs.etf.kn.master.dataSource.mobile.MobileStreetDataSource;
 
 public class StreetDataManager {
 
     //                 sourceId,  source
     private static Map<String, StreetDataSource> sources = new ConcurrentHashMap<>();
 
-    public static StreetDataSource addDataSource(String sourceId) {
+    public static StreetDataSource createDataSource(String sourceId) {
+        if (sources.get(sourceId) != null) {
+            return sources.get(sourceId);
+        }
+        if("mobile".equals(sourceId)){
+            MobileStreetDataSource ms = new MobileStreetDataSource();
+            sources.put(sourceId, ms);
+            return ms;
+        }
         StreetDataSource source = new StreetDataSource(sourceId);
         sources.put(sourceId, source);
         return source;
@@ -33,7 +42,7 @@ public class StreetDataManager {
         if (s != null) {
             return s;
         }
-        return addDataSource(id);
+        return createDataSource(id);
     }
 
     public static void addStreetData(String sourceId, String streetId, StreetData d) {
@@ -51,11 +60,12 @@ public class StreetDataManager {
 
     public static void loadMockMobileData() {
         String file = "/Users/NikLik/Downloads/mobileTrafficData.json";
-        Type type = new TypeToken<HashMap<String, MobileStreetData>>(){}.getType();
+        Type type = new TypeToken<HashMap<String, MobileStreetData>>() {
+        }.getType();
         try {
             HashMap<String, MobileStreetData> msds = new Gson().fromJson(new String(Files.readAllBytes(Paths.get(file))), type);
             StreetDataSource sds = new StreetDataSource("mobile");
-            for(String id : msds.keySet()) {
+            for (String id : msds.keySet()) {
                 sds.addData(id, msds.get(id));
             }
             sources.put("mobile", sds);
