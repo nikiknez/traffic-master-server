@@ -41,9 +41,9 @@ public class AddStreetServlet extends HttpServlet {
 
         Location[] p = new Gson().fromJson(path, Location[].class);
         Street newStreet = new Street(Configuration.get().getNextId() + "", p, owner.getUsername(), null, null, null);
-        
+
         LinkedList<Street> newStreets = (LinkedList<Street>) request.getSession().getAttribute("newStreets");
-        if(newStreets == null){
+        if (newStreets == null) {
             newStreets = new LinkedList<>();
             request.getSession().setAttribute("newStreets", newStreets);
         }

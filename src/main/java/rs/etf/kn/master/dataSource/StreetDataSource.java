@@ -6,7 +6,7 @@ import java.util.Map;
 public class StreetDataSource {
 
     String id;
-    //  streetId, data
+    //streetId, data
     Map<String, StreetData> data;
 
     public StreetDataSource(String id) {
@@ -14,11 +14,6 @@ public class StreetDataSource {
         data = new HashMap<>();
     }
 
-    public StreetDataSource(String id, Map<String, StreetData> data) {
-        this.id = id;
-        this.data = data;
-    }
-    
     public void addData(String streetId, StreetData d) {
         data.put(streetId, d);
     }

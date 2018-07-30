@@ -99,7 +99,7 @@ public class OpenCV {
 
         System.out.println(fileName + " | Read frame at " + time + ": " + r);
 
-        return matToBufferedImage(frame);
+        return r ? matToBufferedImage(frame) : null;
     }
 
     public static void toGray(Mat colored) {

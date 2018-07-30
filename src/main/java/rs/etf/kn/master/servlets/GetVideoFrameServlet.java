@@ -2,6 +2,7 @@ package rs.etf.kn.master.servlets;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
@@ -33,7 +34,22 @@ public class GetVideoFrameServlet extends HttpServlet {
         } catch (IOException | NullPointerException e) {
             LOG.severe(e.getMessage());
         }
-        
+
+    }
+
+    private long getNextTimeStamp(HttpServletRequest request, String file) {
+        HashMap<String, Long> tsMap = (HashMap<String, Long>) request.getSession().getAttribute("timestampsMap");
+        if (tsMap == null) {
+            tsMap = new HashMap<>();
+            request.getSession().setAttribute("timestampsMap", tsMap);
+        }
+        Long ts = tsMap.get(file);
+        if (ts == null) {
+            tsMap.put(file, System.currentTimeMillis());
+            return 0;
+        } else {
+            return System.currentTimeMillis() - ts;
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
