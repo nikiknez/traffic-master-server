@@ -202,4 +202,13 @@ public class Configuration {
     public String toJson() {
         return serializer.toJson(this);
     }
+
+    public class IntensityColorMap {
+        public int lowIntensityColor = 0xFFF23C32;
+        public int lowIntensityLevel = 5;
+        public int midIntensityColor = 0xFFFF974D;
+        public int midIntensityLevel = 10;
+        public int highIntensityColor = 0XFF63D668;
+    }
+    public IntensityColorMap intensityColorMap  = new IntensityColorMap();
 }

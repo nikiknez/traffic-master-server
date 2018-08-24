@@ -19,6 +19,7 @@ $(document).ready(function () {
     }
     map = new google.maps.Map(document.getElementById('map'), {
         center: lastLocation, zoom: zoom, draggableCursor: 'default',
+        fullscreenControl: false,
         mapTypeControlOptions: {
             mapTypeIds: ['roadmap', 'satellite']
         }
@@ -66,11 +67,15 @@ $(document).ready(function () {
     initCameraSetup();
 
     setupTrafficDataFetching();
-    
+
     setupConfigFetching();
 
     updateMarkedPointsFromConfig();
 });
+
+config.intensityColorMap.highIntensityColor = toColor(config.intensityColorMap.highIntensityColor);
+config.intensityColorMap.midIntensityColor = toColor(config.intensityColorMap.midIntensityColor);
+config.intensityColorMap.lowIntensityColor = toColor(config.intensityColorMap.lowIntensityColor);
 
 var mobileStreetPaths = [];
 var showMobileData = true;
@@ -129,11 +134,14 @@ function setupConfigFetching() {
             updateStreetsFromConfig();
             updateCamerasFromConfig();
             updateMarkedPointsFromConfig();
+            config.intensityColorMap.highIntensityColor = toColor(config.intensityColorMap.highIntensityColor);
+            config.intensityColorMap.midIntensityColor = toColor(config.intensityColorMap.midIntensityColor);
+            config.intensityColorMap.lowIntensityColor = toColor(config.intensityColorMap.lowIntensityColor);
         }).always(function () {
             setTimeout(getConfig, 20000);
         });
     }
-    
+
     setTimeout(getConfig, 20000);
 }
 
