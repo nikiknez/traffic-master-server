@@ -45,7 +45,7 @@ public class StreetDataManager {
         return createDataSource(id);
     }
 
-    public static void addStreetData(String sourceId, String streetId, StreetData d) {
+    public synchronized static void addStreetData(String sourceId, String streetId, StreetData d) {
         StreetDataSource source = sources.get(sourceId);
         if (source == null) {
             source = new StreetDataSource(sourceId);
@@ -54,7 +54,7 @@ public class StreetDataManager {
         source.addData(streetId, d);
     }
 
-    public static String toJSON() {
+    public synchronized static String toJSON() {
         return new Gson().toJson(sources);
     }
 
@@ -64,7 +64,7 @@ public class StreetDataManager {
         }.getType();
         try {
             HashMap<String, MobileStreetData> msds = new Gson().fromJson(new String(Files.readAllBytes(Paths.get(file))), type);
-            StreetDataSource sds = new StreetDataSource("mobile");
+            StreetDataSource sds = new MobileStreetDataSource();
             for (String id : msds.keySet()) {
                 sds.addData(id, msds.get(id));
             }

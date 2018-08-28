@@ -16,8 +16,7 @@ public class MobileStreetDataSource extends StreetDataSource {
         super("mobile");
     }
 
-    public void addData(SnappedPoint[] points, double[] speeds) {
-        LOG.log(Level.WARNING, "Got {0} points in result", points.length);
+    public synchronized void addData(SnappedPoint[] points, double[] speeds) {
         List<Location> path = new LinkedList<>();
         int origIdx = 0;
         double speed = 0;
@@ -31,17 +30,7 @@ public class MobileStreetDataSource extends StreetDataSource {
 
             if (!point.placeId.equals(lastStreetId)) {
                 speed /= path.size();
-                MobileStreetData msdata = new MobileStreetData(path, (int) speed);
-                if (getData(lastStreetId) != null) {
-                    MobileStreetData oldData = (MobileStreetData) getData(lastStreetId);
-                    Location lastPoint = oldData.getPath().get(oldData.getPath().size() - 1);
-                    if (lastPoint.equals(path.get(0))) {
-                        oldData.getPath().addAll(path);
-                        oldData.setIntensity((int) speed);
-                        msdata = oldData;
-                    }
-                }
-                addData(lastStreetId, msdata);
+                addStreetSegment(lastStreetId, path, speed);
                 speed = 0;
                 path = new LinkedList<>();
             }
@@ -50,9 +39,22 @@ public class MobileStreetDataSource extends StreetDataSource {
             path.add(l);
             if (point == lastSnappedPoint) {
                 speed /= path.size();
-                MobileStreetData msdata = new MobileStreetData(path, (int) speed);
-                addData(lastStreetId, msdata);
+                addStreetSegment(lastStreetId, path, speed);
             }
+        }
+    }
+
+    private void addStreetSegment(String streetId, List<Location> path, double speed) {
+        MobileStreetData newData = new MobileStreetData(path, (int) speed);
+        MobileStreetData oldData = (MobileStreetData) getData(streetId);
+        if (oldData != null) {
+            Location lastPoint = oldData.getPath().get(oldData.getPath().size() - 1);
+            if (lastPoint.equals(path.get(0))) {
+                oldData.getPath().addAll(path);
+            }
+            oldData.setIntensity((int) speed);
+        } else {
+            addData(streetId, newData);
         }
     }
 }

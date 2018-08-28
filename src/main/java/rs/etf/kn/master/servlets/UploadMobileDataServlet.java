@@ -48,13 +48,14 @@ public class UploadMobileDataServlet extends HttpServlet {
             RoadsApi.snapToRoads(Main.geoApiContext, true, queryPoints).setCallback(new PendingResult.Callback<SnappedPoint[]>() {
                 @Override
                 public void onResult(SnappedPoint[] sp) {
+                    LOG.log(Level.WARNING, "Got {0} points in result", sp.length);
                     MobileStreetDataSource source = (MobileStreetDataSource) StreetDataManager.getDataSource("mobile");
                     source.addData(sp, speeds);
                 }
 
                 @Override
                 public void onFailure(Throwable thrwbl) {
-                    LOG.severe("Got error in response");
+                    LOG.log(Level.SEVERE, "Got error in response: {0}", thrwbl.getMessage());
                 }
             });
 
