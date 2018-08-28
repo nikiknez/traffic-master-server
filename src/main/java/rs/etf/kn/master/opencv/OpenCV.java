@@ -35,8 +35,10 @@ public class OpenCV {
 
             return true;
         } catch (Exception | UnsatisfiedLinkError e) {
-            throw new RuntimeException("Failed to load opencv native library", e);
+            e.printStackTrace();
+//            throw new RuntimeException("Failed to load opencv native library", e);
         }
+        return false;
     }
 
     public static Mat bufferedImgToMat(BufferedImage image) {

@@ -22,7 +22,7 @@ public class Main implements ServletContextListener {
         System.out.println("contextInitialized begin");
         Configuration.load();
         StreetDataManager.loadMockMobileData();
-//        initializeBackend();
+        initializeBackend();
         geoApiContext = new GeoApiContext.Builder().apiKey(GOOGLE_MAPS_KEY).build();
         System.out.println("contextInitialized end");
     }
