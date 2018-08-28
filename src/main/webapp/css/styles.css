@@ -44,7 +44,7 @@ html, body {
 #streetControlDiv, #camConfigControlDiv, #camSelectDiv, #streetSelectDiv {
     position: absolute;
     left: 5px;
-    top: 40%;
+    top: 5px;
 }
 
 #contextMenu, #streetContextMenu, #markPointContextMenu {
