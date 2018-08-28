@@ -20,6 +20,7 @@ import org.opencv.video.Video;
 import rs.etf.kn.master.dataSource.StreetData;
 import rs.etf.kn.master.dataSource.StreetDataManager;
 import rs.etf.kn.master.model.CamStreetConfig;
+import rs.etf.kn.master.model.Configuration;
 import rs.etf.kn.master.opencv.OpenCV;
 import rs.etf.kn.master.opencv.PerspectiveTransformator;
 
@@ -33,6 +34,7 @@ public class CamImageAnalyser extends Thread implements CamImageFetcher.CamImage
 
     private Mat matReperImage;
     private MatOfPoint2f reperImageFeaturePoints;
+    private long reperImageTimeStamp = 0;
 
     public CamImageAnalyser(CamStreetConfig c, BufferedImage reperImage) {
         camStreetConfig = c;
@@ -50,6 +52,20 @@ public class CamImageAnalyser extends Thread implements CamImageFetcher.CamImage
         double minDistance = Math.sqrt(img.width() * img.height() / 2000);
         Imgproc.goodFeaturesToTrack(img, corners, 1000, 0.05, minDistance);
         corners.convertTo(reperImageFeaturePoints, CvType.CV_32F);
+    }
+
+    private void updateReperImage(CamImage img) {
+        if (img.timeStamp - reperImageTimeStamp > 60 * 1000) {
+            reperImageTimeStamp = img.timeStamp;
+            LOG.info("Updating reper image");
+            updateReperImage(img.matImgGray);
+            try {
+                String name = Configuration.REPERS_DIR + camStreetConfig.getStreetId() + ".jpg";
+                BufferedImage image = OpenCV.matToBufferedImage(img.matImg);
+                ImageIO.write(image, "jpg", new File(name));
+            } catch (IOException ex) {
+            }
+        }
     }
 
     private MatOfPoint2f goodFeaturesToTrack(Mat img) {
@@ -82,9 +98,9 @@ public class CamImageAnalyser extends Thread implements CamImageFetcher.CamImage
                 }
                 MatOfPoint2f matLastPoints = goodFeaturesToTrack(lastFrameROI);
 
-                List<MotionVector> motionVectors = calcOpticalFlow(lastFrameROI, nextFrameROI, matLastPoints);
+                List<Double> distances = calcOpticalFlow(lastFrameROI, nextFrameROI, matLastPoints);
 
-                processMotionVectors(motionVectors, timeDiff);
+                processMotionVectors(distances, timeDiff);
 
                 lastFrame = nextFrame;
                 lastFrameROI = nextFrameROI;
@@ -94,17 +110,16 @@ public class CamImageAnalyser extends Thread implements CamImageFetcher.CamImage
         }
     }
 
-    private void processMotionVectors(List<MotionVector> vectors, long timeDiff) {
-        int totalVectors = vectors.size();
-        int totalMotions = 0;
+    private void processMotionVectors(List<Double> distances, long timeDiff) {
+        int totalDetections = distances.size();
+        int totalMotions = 1;
         double totalDistance = 0;
         int maxIntensity = 0;
-        for (MotionVector motion : vectors) {
-            double distance = motion.distance(camStreetConfig.getMetersPerPixelRatio());
-            if (distance > 0.5) {
+        for (Double distance : distances) {
+            double intensity = distance * 1000 / timeDiff;
+            if (intensity >= 1) {
                 totalMotions++;
                 totalDistance += distance;
-                double intensity = distance * 1000 / timeDiff;
                 if (intensity > maxIntensity) {
                     maxIntensity = (int) intensity;
                 }
@@ -112,12 +127,30 @@ public class CamImageAnalyser extends Thread implements CamImageFetcher.CamImage
         }
         double avgDistance = totalDistance / totalMotions;
         double intensity = avgDistance * 1000 / timeDiff;
-        LOG.log(Level.INFO, "intensity = {0}", intensity);
-        forwardResult((int) maxIntensity);
+        double movedPercent = totalMotions / totalDetections;
+        LOG.log(Level.INFO, "moved percent = {0}; avg intensity = {1}; max intensity = {2};", new Object[]{movedPercent, intensity, maxIntensity});
+        publishResult((int) Math.ceil(maxIntensity));
     }
 
-    private void forwardResult(int intensity) {
+    private List<Integer> intensityHistory = new LinkedList<>();
+
+    private void publishResult(int intensity) {
+        intensityHistory.add(intensity);
+        intensity = max(intensityHistory);
+        if (intensityHistory.size() > 10) {
+            intensityHistory.remove(0);
+        }
         StreetDataManager.addStreetData("cam", camStreetConfig.getStreetId(), new StreetData(intensity));
+    }
+
+    private int max(List<Integer> l) {
+        int max = 0;
+        for (Integer i : l) {
+            if (i > max) {
+                max = i;
+            }
+        }
+        return max;
     }
 
     public synchronized void stopProcessing() {
@@ -139,23 +172,24 @@ public class CamImageAnalyser extends Thread implements CamImageFetcher.CamImage
         while (camImageQueue.isEmpty()) {
             wait();
         }
-        LOG.info("Analysing new image");
         return camImageQueue.remove(0);
     }
 
     private CamImage getNextValidImage() throws InterruptedException {
         CamImage img = getNextImage();
-        while (reperImageSimilarity(img.matImgGray) < 0.5) {
+        while (reperImageSimilarity(img.matImgGray) < 0.6) {
             img = getNextImage();
         }
+        updateReperImage(img);
         dumpMatchedImage(img);
         return img;
     }
-    
-    private void dumpMatchedImage(CamImage img){
+
+    private void dumpMatchedImage(CamImage img) {
         try {
-            String name = "/var/master/temp/" + camStreetConfig.getStreetId() + "-" + img.timeStamp + ".jpg";
-            BufferedImage image = OpenCV.matToBufferedImage(img.matImg);
+            String name = Configuration.TEMP_DIR + camStreetConfig.getStreetId() + "-" + img.timeStamp + ".jpg";
+            Mat transformed = PerspectiveTransformator.fourPointTransform(img.matImg, camStreetConfig.getPolyPoints());
+            BufferedImage image = OpenCV.matToBufferedImage(transformed);
             ImageIO.write(image, "jpg", new File(name));
         } catch (IOException ex) {
         }
@@ -189,14 +223,15 @@ public class CamImageAnalyser extends Thread implements CamImageFetcher.CamImage
             }
         }
         if (valid == 0) {
+            LOG.log(Level.INFO, "total = {0}   valid = {1}   fix = {2}   similarity = {3}", new Object[]{total, valid, fix, 0});
             return 0;
         }
         double sim = valid / total > 0.2 ? fix / valid : 0;
-        LOG.info("total = " + total + "   valid = " + valid + "   fix = " + fix + "   similarity = " + sim);
+        LOG.log(Level.INFO, "total = {0}   valid = {1}   fix = {2}   similarity = {3}", new Object[]{total, valid, fix, sim});
         return sim;
     }
 
-    private List<MotionVector> calcOpticalFlow(Mat prevImg, Mat nextImg, MatOfPoint2f prevPts) {
+    private List<Double> calcOpticalFlow(Mat prevImg, Mat nextImg, MatOfPoint2f prevPts) {
         MatOfPoint2f nextPts = new MatOfPoint2f();
         MatOfByte matStatus = new MatOfByte();
         MatOfFloat matError = new MatOfFloat();
@@ -208,31 +243,18 @@ public class CamImageAnalyser extends Thread implements CamImageFetcher.CamImage
         byte[] status = matStatus.toArray();
         float[] error = matError.toArray();
 
-        List<MotionVector> motionVectors = new LinkedList<>();
+        List<Double> distances = new LinkedList<>();
 
         for (int i = 0; i < prevp.length; i++) {
             if (status[i] != 0 && error[i] < 10) {
-                motionVectors.add(new MotionVector(prevp[i], nextp[i]));
+                distances.add(getDistance(prevp[i], nextp[i]));
             }
         }
 
-        return motionVectors;
+        return distances;
     }
 
-    private class MotionVector {
-
-        Point a, b;
-        double length;
-
-        public MotionVector(Point a, Point b) {
-            this.a = a;
-            this.b = b;
-            length = Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
-        }
-
-        // in meters
-        public double distance(double metersPerPixelRatio) {
-            return length * metersPerPixelRatio;
-        }
+    private double getDistance(Point a, Point b) {
+        return Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y)) * camStreetConfig.getMetersPerPixelRatio();
     }
 }
