@@ -1,6 +1,6 @@
 var selectedStreet = null;
 var camSelectMode = false;
-
+var FORMAT = "DD.MM.YYYY HH:mm";
 function MarkedStreet(polyLine, options) {
     var self = this;
     self.polyLine = polyLine;
@@ -40,6 +40,9 @@ function MarkedStreet(polyLine, options) {
             iw.close();
             iw.setPosition(e.latLng);
             iw.setContent(self.infoText);
+            if (moment().isBefore(moment(self.validFrom, FORMAT))) {
+                iw.setContent(self.infoText + "<br>Vazi od: " + self.validFrom);
+            }
             iw.open(map);
         }
     });
@@ -74,6 +77,9 @@ $("#bindToCamButton").click(function () {
 
 $("#streetInfoButton").click(function () {
     $("#streetInfoText").val(selectedStreet.infoText);
+    $("#streetInfoValidFrom").val(selectedStreet.validFrom);
+    $("#streetInfoValidTo").val(selectedStreet.validTo);
+    $("#streetDialogError").html("");
     $("#streetInfoModal").modal("show");
 });
 
@@ -94,10 +100,22 @@ $("#saveStreetInfoButton").click(function () {
     var from = $("#streetInfoValidFrom").val();
     var to = $("#streetInfoValidTo").val();
 
+    if (to !== "" && moment().isAfter(moment(to, FORMAT))) {
+        $("#streetDialogError").html("Krajnje vreme vazenja mora biti u buducnosti");
+        return false;
+    }
+    
+    if (to !== "" && from !== "" && moment(from, FORMAT).isAfter(moment(to, FORMAT))) {
+        $("#streetDialogError").html("Krajnje vreme vazenja mora biti posle pocetnog vremena vazenja");
+        return false;
+    }
+    
     if (selectedStreet) {
         var p = {id: selectedStreet.id, info: text, from: from, to: to};
         $.post("AddStreetInfoServlet", $.param(p));
         selectedStreet.infoText = text;
+        selectedStreet.validFrom = from;
+        selectedStreet.validTo = to;
         makeDashedPolyLine(selectedStreet.polyLine);
         selectedStreet = null;
     } else {

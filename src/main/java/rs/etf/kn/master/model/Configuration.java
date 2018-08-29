@@ -142,6 +142,10 @@ public class Configuration {
     public void addStreet(Street s) {
         streets.add(s);
     }
+    
+    public void removeStreet(Street s) {
+        streets.remove(s);
+    }
 
     public void addMark(Mark s) {
         marks.add(s);

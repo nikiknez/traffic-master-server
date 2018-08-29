@@ -48,6 +48,9 @@ function MarkedPoint(owner, location, text, validFrom, validTo, id) {
     var iw = new google.maps.InfoWindow();
     iw.setOptions({maxWidth: 300});
     iw.setContent(text);
+    if (moment().isBefore(moment(self.validFrom, FORMAT))) {
+        iw.setContent(self.info + "<br>Vazi od: " + self.validFrom);
+    }
 
     marker.addListener('click', function (e) {
         iw.open(map, marker);

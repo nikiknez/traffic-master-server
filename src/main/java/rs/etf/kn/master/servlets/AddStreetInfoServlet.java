@@ -31,14 +31,14 @@ public class AddStreetInfoServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        
+
         String id = request.getParameter("id");
         String infoText = request.getParameter("info");
         String from = request.getParameter("from");
         String to = request.getParameter("to");
-        
-        for(Street s: Configuration.get().getStreets()){
-            if(s.getId().equals(id)){
+
+        for (Street s : Configuration.get().getStreets()) {
+            if (s.getId().equals(id)) {
                 s.setInfoText(infoText);
                 s.setValidFrom(from);
                 s.setValidTo(to);
@@ -46,10 +46,13 @@ public class AddStreetInfoServlet extends HttpServlet {
                 return;
             }
         }
-        
+
         LinkedList<Street> newStreets = (LinkedList<Street>) request.getSession().getAttribute("newStreets");
-        for(Street s: newStreets){
-            if(s.getId().equals(id)){
+        if (newStreets == null) {
+            return;
+        }
+        for (Street s : newStreets) {
+            if (s.getId().equals(id)) {
                 s.setInfoText(infoText);
                 s.setValidFrom(from);
                 s.setValidTo(to);
