@@ -88,7 +88,6 @@ function displayMobileData(visible) {
 function updateMobileStreetData(streetId, streetData) {
     var po = {
         map: map,
-        strokeWeight: 3,
         strokeColor: intensityToColorMap(streetData.intensity),
         path: streetData.path,
         visible: showMobileData
@@ -98,6 +97,8 @@ function updateMobileStreetData(streetId, streetData) {
         streetPolyLine.setOptions(po);
     } else {
         mobileStreetPaths[streetId] = new google.maps.Polyline(po);
+//        new google.maps.Marker({map: map, position: po.path[0]});
+//        new google.maps.Marker({map: map, position: po.path[po.path.length - 1]});
     }
 }
 function setupTrafficDataFetching() {
@@ -119,7 +120,7 @@ function setupTrafficDataFetching() {
                 }
             }
         }).always(function () {
-            setTimeout(getTraficData, 20000);
+            setTimeout(getTraficData, 30000);
         });
     }
     setTimeout(getTraficData, 1000);
@@ -138,7 +139,7 @@ function setupConfigFetching() {
             config.intensityColorMap.midIntensityColor = toColor(config.intensityColorMap.midIntensityColor);
             config.intensityColorMap.lowIntensityColor = toColor(config.intensityColorMap.lowIntensityColor);
         }).always(function () {
-            setTimeout(getConfig, 20000);
+            setTimeout(getConfig, 30000);
         });
     }
 
