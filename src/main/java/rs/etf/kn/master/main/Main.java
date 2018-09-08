@@ -21,7 +21,7 @@ public class Main implements ServletContextListener {
     public void contextInitialized(ServletContextEvent sce) {
         System.out.println("contextInitialized begin");
         Configuration.load();
-        StreetDataManager.loadMockMobileData();
+//        StreetDataManager.loadMockMobileData();
         initializeBackend();
         geoApiContext = new GeoApiContext.Builder().apiKey(GOOGLE_MAPS_KEY).build();
         System.out.println("contextInitialized end");

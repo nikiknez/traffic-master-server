@@ -19,8 +19,8 @@ public abstract class CamImageFetcher extends Thread {
     @Override
     public void run() {
         waitForListeners();
-        try {
-            while (run) {
+        while (run) {
+            try {
                 CamImage img = fetchImage();
                 boolean consumed = true;
                 for (CamImageListener l : listeners) {
@@ -29,9 +29,9 @@ public abstract class CamImageFetcher extends Thread {
                 if (!consumed) {
                     Thread.sleep(5000);
                 }
+            } catch (IOException | InterruptedException ex) {
+                LOG.log(Level.SEVERE, "Fetcher stopped", ex);
             }
-        } catch (IOException | InterruptedException ex) {
-            LOG.log(Level.SEVERE, "Fetcher stopped", ex);
         }
     }
 

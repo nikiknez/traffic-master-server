@@ -226,7 +226,7 @@ public class CamImageAnalyser extends Thread implements CamImageFetcher.CamImage
             LOG.log(Level.INFO, "total = {0}   valid = {1}   fix = {2}   similarity = {3}", new Object[]{total, valid, fix, 0});
             return 0;
         }
-        double sim = valid / total > 0.2 ? fix / valid : 0;
+        double sim = valid / total > 0.18 ? fix / valid : 0;
         LOG.log(Level.INFO, "total = {0}   valid = {1}   fix = {2}   similarity = {3}", new Object[]{total, valid, fix, sim});
         return sim;
     }
