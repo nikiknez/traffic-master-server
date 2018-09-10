@@ -50,13 +50,21 @@ public class PerspectiveTransformator {
 
         double widthA = Math.sqrt((bl.x - br.x) * (bl.x - br.x) + (bl.y - br.y) * (bl.y - br.y));
         double widthB = Math.sqrt((tl.x - tr.x) * (tl.x - tr.x) + (tl.y - tr.y) * (tl.y - tr.y));
-        int maxWidth = (int) Math.max(widthA, widthB);
+        double maxWidth = Math.max(widthA, widthB);
 
         double heightA = Math.sqrt((tr.x - br.x) * (tr.x - br.x) + (tr.y - br.y) * (tr.y - br.y));
         double heightB = Math.sqrt((tl.x - bl.x) * (tl.x - bl.x) + (tl.y - bl.y) * (tl.y - bl.y));
-        int maxHeight = (int) Math.max(heightA, heightB);
+        double maxHeight = Math.max(heightA, heightB);
 
-        return new Dimension(maxWidth, maxHeight);
+        double minHeight = Math.min(heightA, heightB);
+        double minWidth = Math.min(widthA, widthB);
+
+        double widthRatio = minWidth / maxWidth;
+        double heightRatio = minHeight / maxHeight;
+        maxWidth *= heightRatio;
+        maxHeight *= widthRatio;
+
+        return new Dimension((int) maxWidth, (int) maxHeight);
     }
 
     private static Point2D.Float computeCenter(Point2D.Float[] points) {
